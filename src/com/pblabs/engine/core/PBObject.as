@@ -8,8 +8,6 @@
  ******************************************************************************/
 package com.pblabs.engine.core
 {
-    import com.pblabs.engine.PBE;
-
     /**
      * Base implementation of a named object that can exist in PBSets or PBGroups.
      * 
@@ -20,7 +18,15 @@ package com.pblabs.engine.core
         protected var _name:String, _alias:String;
         protected var _owningGroup:PBGroup;
         protected var _sets:Array;
+		protected var _context:IPBContextRegistration;
         
+		internal function setContext(c:IPBContextRegistration):void
+		{
+			if(_context)
+				throw new Error("Trying to set context on a PBObject that already has one!");
+			_context = c;
+		}
+		
         internal function noteInSet(s:PBSet):void
         {
             if(!_sets)
@@ -45,6 +51,9 @@ package com.pblabs.engine.core
 
         public function set owningGroup(value:PBGroup):void
         {
+			if(value == _owningGroup)
+				return;
+			
             if(!value)
                 throw new Error("Must always be in a group - cannot set owningGroup to null!");
             
@@ -70,19 +79,13 @@ package com.pblabs.engine.core
             // Note the names.
             _name = name;
             _alias = alias;
-            
-            // Register with the name manager.
-            PBE.nameManager.add(this);
-            
-            // Put us in the current group if we have no group specified.
-            if(owningGroup == null && PBE.currentGroup != this)
-                owningGroup = PBE.currentGroup;
+
+			(context as IPBContextRegistration).register(this);
         }
         
         public function destroy():void
         {
-            // Remove from the name manager.
-            PBE.nameManager.remove(this);
+			(context as IPBContextRegistration).unregister(this);
             
             // Remove from any sets.
             while(_sets && _sets.length)
@@ -101,6 +104,11 @@ package com.pblabs.engine.core
                 _owningGroup.removeFromGroup(this);
                 _owningGroup = null;                
             }
+        }
+        
+        public function get context():IPBContext
+        {
+            return _context;
         }
     }
 }

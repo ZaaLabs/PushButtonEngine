@@ -8,12 +8,13 @@
  ******************************************************************************/
 package com.pblabs.sound
 {
-    import com.pblabs.engine.PBE;
-    import com.pblabs.engine.core.ITickedObject;
+
+    import com.pblabs.engine.core.IPBContext;
     import com.pblabs.engine.debug.Logger;
     import com.pblabs.engine.debug.Profiler;
     import com.pblabs.engine.resource.MP3Resource;
     import com.pblabs.engine.resource.SoundResource;
+    import com.pblabs.engine.time.ITickedObject;
     
     import flash.events.IOErrorEvent;
     import flash.media.Sound;
@@ -28,6 +29,9 @@ package com.pblabs.sound
      */
     public class SoundManager implements ISoundManager, ITickedObject
     {
+		[Inject]
+		public var context:IPBContext;
+		
         public static const MUSIC_MIXER_CATEGORY:String = "music";
         public static const SFX_MIXER_CATEGORY:String = "sfx";
         
@@ -74,7 +78,7 @@ package com.pblabs.sound
                         resourceType = MP3Resource;
                     
                     // Otherwise queue the resource and play it when it is loaded.
-                    PBE.resourceManager.load(sound, resourceType, function(r:*):void
+                    context.resourceManager.load(sound, resourceType, function(r:*):void
                     {
                         cachedSounds[sound] = r;
                         play(r as SoundResource, category, pan, loopCount, startDelay);

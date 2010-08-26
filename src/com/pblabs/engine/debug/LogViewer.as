@@ -10,12 +10,14 @@ package com.pblabs.engine.debug
 {
     import com.pblabs.engine.PBE;
     import com.pblabs.engine.PBUtil;
-    import com.pblabs.engine.core.IAnimatedObject;
-    import com.pblabs.engine.core.InputKey;
+    import com.pblabs.engine.input.InputKey;
+    import com.pblabs.engine.time.IAnimatedObject;
     
+    import flash.desktop.Clipboard;
     import flash.display.Bitmap;
     import flash.display.BitmapData;
     import flash.display.Sprite;
+    import flash.events.Event;
     import flash.events.KeyboardEvent;
     import flash.events.MouseEvent;
     import flash.system.System;
@@ -23,11 +25,12 @@ package com.pblabs.engine.debug
     import flash.text.TextFieldType;
     import flash.text.TextFormat;
     import flash.ui.Keyboard;
+    import flash.utils.setTimeout;
     
     /**
      * Console UI, which shows console log activity in-game, and also accepts input from the user.
      */
-    public class LogViewer extends Sprite implements ILogAppender, IAnimatedObject
+    public class LogViewer extends Sprite implements ILogAppender
     {
         protected var _messageQueue:Array = [];
         protected var _maxLength:uint = 200000;
@@ -46,7 +49,7 @@ package com.pblabs.engine.debug
         protected var tabCompletionCurrentStart:int = 0;
         protected var tabCompletionCurrentEnd:int = 0;
         protected var tabCompletionCurrentOffset:int = 0;
-		
+        
         protected var glyphCache:GlyphCache = new GlyphCache();
 
         protected var bottomLineIndex:int = int.MAX_VALUE;
@@ -57,12 +60,28 @@ package com.pblabs.engine.debug
         {
             layout();
             addListeners();
-			
-			name = "Console";
-            Console.registerCommand("copy", onBitmapDoubleClick, "Copy the console to the clipboard.");
-			Console.registerCommand("clear", onClearCommand, "Clears the console history.");
             
-            PBE.processManager.addAnimatedObject(this);
+            name = "Console";
+            Console.registerCommand("copy", onBitmapDoubleClick, "Copy the console to the clipboard.");
+            Console.registerCommand("clear", onClearCommand, "Clears the console history.");
+            
+            addEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
+            addEventListener(Event.REMOVED_FROM_STAGE, onRemovedFromStage);
+        }
+
+        protected function frameHandler(e:Event):void
+        {
+            onFrame(0);
+        }
+        
+        protected function onAddedToStage(e:Event):void
+        {
+            addEventListener(Event.ENTER_FRAME, onFrame);
+        }
+        
+        protected function onRemovedFromStage(e:Event):void
+        {
+            removeEventListener(Event.ENTER_FRAME, onFrame);
         }
         
         protected function layout():void
@@ -80,7 +99,7 @@ package com.pblabs.engine.debug
             
             graphics.clear();
             graphics.beginFill(0x111111, .95);
-			graphics.drawRect(0, 0, _width+1, _height);
+            graphics.drawRect(0, 0, _width+1, _height);
             graphics.endFill();
 
             // Necessary for click listeners.
@@ -99,7 +118,7 @@ package com.pblabs.engine.debug
         {
             _input.removeEventListener(KeyboardEvent.KEY_DOWN, onInputKeyDown);
         }
-		
+        
         protected function onBitmapClick(me:MouseEvent):void
         {
             // Give focus to input.
@@ -122,12 +141,12 @@ package com.pblabs.engine.debug
         /**
          * Wipe the displayed console output.
          */
-		protected function onClearCommand():void
-		{
+        protected function onClearCommand():void
+        {
             logCache = [];
             bottomLineIndex = -1;
             _dirtyConsole = true;
-		}
+        }
         
         protected function resize():void
         {
@@ -135,7 +154,7 @@ package com.pblabs.engine.debug
             _outputBitmap.y = 0;
             _input.x = 5;
             
-            if(stage)		
+            if(stage)        
             {
                 _width = stage.stageWidth-1;
                 _height = (stage.stageHeight / 3) * 2;
@@ -170,7 +189,7 @@ package com.pblabs.engine.debug
             format.color = 0xFFFFFF;
             _input.setTextFormat(format);
             _input.defaultTextFormat = format;
-			_input.name = "ConsoleInput";
+            _input.name = "ConsoleInput";
             
             return _input;
         }
@@ -195,11 +214,11 @@ package com.pblabs.engine.debug
             {
                 // Execute an entered command.
                 if(_input.text.length <= 0)
-				{
-					// display a blank line
-					addLogMessage("CMD", ">", _input.text);
-					return;
-				}
+                {
+                    // display a blank line
+                    addLogMessage("CMD", ">", _input.text);
+                    return;
+                }
                 
                 // If Enter was pressed, process the command
                 processCommand();
@@ -429,15 +448,15 @@ package com.pblabs.engine.debug
             removeListeners();
             PBE.mainStage.focus = null;
         }
-		
-		public function set restrict(value:String):void
-		{
-			_input.restrict = value;
-		}
-		
-		public function get restrict():String
-		{
-			return _input.restrict;
-		}
+        
+        public function set restrict(value:String):void
+        {
+            _input.restrict = value;
+        }
+        
+        public function get restrict():String
+        {
+            return _input.restrict;
+        }
     }
 }

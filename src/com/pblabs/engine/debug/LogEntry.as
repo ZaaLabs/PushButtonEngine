@@ -31,27 +31,34 @@ package com.pblabs.engine.debug
        * @see Logger#PrintWarning()
        */
       public static const WARNING:String = "WARNING";
-	  
-	  /**
-	   * Entry type given to debug messages.
-	   * 
-	   * @see Logger#PrintDebug()
-	   */
-	  public static const DEBUG:String = "DEBUG";
-	  
-	  /**
-	   * Entry type given to warnings.
-	   * 
-	   * @see Logger#PrintInfo()
-	   */
-	  public static const INFO:String = "INFO";
-	  
+      
+      /**
+       * Entry type given to debug messages.
+       * 
+       * @see Logger#PrintDebug()
+       */
+      public static const DEBUG:String = "DEBUG";
+      
+      /**
+       * Entry type given to warnings.
+       * 
+       * @see Logger#PrintInfo()
+       */
+      public static const INFO:String = "INFO";
+      
       /**
        * Entry type given to generic messages.
        * 
        * @see Logger#Print()
        */
       public static const MESSAGE:String = "MESSAGE";
+      
+      /**
+       * Entry type given for echo of user commands. Internal use.
+       * 
+       * @see Logger#Print() 
+       */
+      public static const CMD:String = "CMD";
       
       /**
        * The object that printed the message to the log.

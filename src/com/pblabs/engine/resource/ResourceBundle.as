@@ -19,10 +19,10 @@ package com.pblabs.engine.resource
      * The resource bundle handles automatic loading and registering of embedded resources.
      * To use, create a descendant class and embed resources as public variables, then
      * instantiate your class and pass it to PBE via 
-     * PBE.addResources(new MyResourceBundleSubclass());.  ResourceBundle will handle 
+     * context.addResources(new MyResourceBundleSubclass());.  ResourceBundle will handle 
      * loading all of those resources into the ResourceManager. 
      * 
-     * @see PBE.addResources PBE.addResources
+     * @see context.addResources context.addResources
      */
     public class ResourceBundle
     {
@@ -59,7 +59,7 @@ package com.pblabs.engine.resource
             // Make sure PBE is initialized - no resource manager, no love.
             if(!PBE.resourceManager)
             {
-                throw new Error("Cannot instantiate a ResourceBundle until you have called PBE.startup(this);. Move the call to new YourResourceBundle(); to occur AFTER the call to PBE.startup().");
+                throw new Error("Cannot instantiate a ResourceBundle until you have called context.startup(this);. Move the call to new YourResourceBundle(); to occur AFTER the call to context.startup().");
             }
             
             // Get information about our members (which will be embedded resources)
@@ -170,7 +170,7 @@ package com.pblabs.engine.resource
                 
                 if (!resType)
                 {
-                    Logger.error(this, "ResourceBundle", "The resource type '" + resTypeName + "' specified for the embedded asset '" + resSource + "' could not be found.  Please ensure that the path name is correct, and that the class is explicity referenced somewhere in the project, so that it is available at runtime.  Do you call PBE.registerType(" + resTypeName + "); somewhere?");
+                    Logger.error(this, "ResourceBundle", "The resource type '" + resTypeName + "' specified for the embedded asset '" + resSource + "' could not be found.  Please ensure that the path name is correct, and that the class is explicity referenced somewhere in the project, so that it is available at runtime.  Do you call context.registerType(" + resTypeName + "); somewhere?");
                     continue;
                 }
                 

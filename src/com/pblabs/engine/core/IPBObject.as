@@ -15,6 +15,12 @@ package com.pblabs.engine.core
      */
     public interface IPBObject
     {
+		/**
+		 * The context that allocated and which owns this object. You can get at
+		 * the various managers and services in your game from here.
+		 */
+        function get context():IPBContext;
+        
         /**
          * The name of the PBObject. This is set by passing a name to the initialize
          * method after the PBObject is first created.
@@ -64,7 +70,7 @@ package com.pblabs.engine.core
          * the name manager.
          * 
          * <p>PBObjects are automatically removed from any groups/sets that they
-         * are members of when they are destroy()'ed.</p>
+         * are members of when they are destroy()'ed.</P>
          * 
          * <p>Currently this will not invalidate any other references to the PBObject
          * so the PBObject will only be cleaned up by the garbage collector if those

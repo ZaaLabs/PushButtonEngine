@@ -155,6 +155,20 @@ package com.pblabs.engine.resource
             return resource;
         }
         
+        public function setPriority(resource:Resource, priority:Number):void
+        {
+            // Embedded resources have no provider.
+            if(resource.provider)
+                resource.provider.setPriority(resource, priority);
+        }
+        
+        public function cancel(resource:Resource):void
+        {
+            // Embedded resources have no provider.
+            if(resource.provider)
+                resource.provider.cancel(resource);
+        }
+
         /**
          * Unloads a previously loaded resource. This does not necessarily mean the resource
          * will be available for garbage collection. Resources are reference counted so if
@@ -171,8 +185,8 @@ package com.pblabs.engine.resource
             // Unload for now.
             
             // mas : we probably have to unload the resource @ the specific resourceProvider
-            // 		 as well! so we have to take this into account when we reactivate the
-            //		 unload.
+            //       as well! so we have to take this into account when we reactivate the
+            //       unload.
             
             return;
             

@@ -104,7 +104,7 @@ package com.pblabs.box2D
         
         override protected function onAdd():void
         {
-            PBE.processManager.addTickedObject(this);
+            context.processManager.addTickedObject(this);
             createWorld();
         }
         
@@ -115,7 +115,7 @@ package com.pblabs.box2D
             //defer until we know it should not be locked anymore.
             if (_world.m_lock)
             {
-                PBE.processManager.schedule(0, this, onRemove);
+                context.processManager.schedule(0, this, onRemove);
             }
             else
             {
@@ -128,7 +128,7 @@ package com.pblabs.box2D
                 
                 _world = null;
                 
-                PBE.processManager.removeTickedObject(this);
+                context.processManager.removeTickedObject(this);
             }
         }
         
@@ -141,7 +141,7 @@ package com.pblabs.box2D
             //defer until we know it should not be locked anymore.
             if (_world.m_lock)
             {
-                PBE.processManager.schedule(0, thisArg, add, bodyDef, thisArg, completedCallback);
+                context.processManager.schedule(0, thisArg, add, bodyDef, thisArg, completedCallback);
             }
             else
             {
@@ -158,7 +158,7 @@ package com.pblabs.box2D
                 //the world is locked. this was called from a collision or other event.
                 //defer until we know it should not be locked anymore.
                 if (_world.m_lock)
-                    PBE.processManager.schedule(0, this, remove, body);
+                    context.processManager.schedule(0, this, remove, body);
                 else
                     _world.DestroyBody(body);
             }
@@ -210,7 +210,7 @@ package com.pblabs.box2D
 					
 					var curShape:b2Shape = resultShapes[i] as b2Shape;
 					var curComponent:Box2DSpatialComponent = curShape.GetBody().GetUserData() as Box2DSpatialComponent;
-					if(PBE.objectTypeManager.doTypesOverlap(curComponent.collisionType, mask) || mask == null)
+					if(context.objectTypeManager.doTypesOverlap(curComponent.collisionType, mask) || mask == null)
 						results.push(curComponent);
 				}
 			}

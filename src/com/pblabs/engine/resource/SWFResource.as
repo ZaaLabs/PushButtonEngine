@@ -8,7 +8,7 @@
  ******************************************************************************/
 package com.pblabs.engine.resource 
 {
-    import com.pblabs.engine.PBE;
+
     
     import flash.display.*;
     import flash.geom.*;

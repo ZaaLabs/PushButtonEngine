@@ -45,7 +45,7 @@ package com.pblabs.engine.resource.provider
          */
         public function BulkLoaderResourceProvider(name:String, numConnections:int = 12, registerAsProvider:Boolean=true)
         {
-            super(registerAsProvider);									 
+            super(registerAsProvider);                                     
             // create this provider's bulk loader object
             loader = new BulkLoader(name, numConnections);
         }
@@ -69,20 +69,20 @@ package com.pblabs.engine.resource.provider
             // the resource has to be loaded so add to BulkLoader
             // Special case so that MP3Resource gets a sound like it wants.
             loader.add(uri, { id : resourceIdentifier, type: type == MP3Resource ? "sound" : "binary"  } );
-            if (!loader.isRunning) loader.start();	
+            if (!loader.isRunning) loader.start();    
             
             // let BulkLoader give a notification when this resource has been
             // load so we can initialize it.
             loader.get(resourceIdentifier).addEventListener(Event.COMPLETE,resourceLoaded)
             loader.get(resourceIdentifier).addEventListener(BulkLoader.ERROR,resourceError)
             
-			//If force reload, delete old resource first:
+            //If force reload, delete old resource first:
             if (resources[resourceIdentifier] && forceReload)
             {
                 resources[resourceIdentifier] = null;
                 delete resources[resourceIdentifier];
-            }			
-			
+            }            
+            
             if (resources[resourceIdentifier]==null)
             {
                 // create resource and provide it to the ResourceManager
@@ -91,11 +91,49 @@ package com.pblabs.engine.resource.provider
                 resources[resourceIdentifier] = resource;
             }
             else
-                resource = resources[resourceIdentifier];			
+                resource = resources[resourceIdentifier];            
             
             return resource;
         }
         
+        
+        public override function setPriority(resource:Resource, priority:Number):void
+        {
+            // Find the resource in our lookup table.
+            var resourceKey:String = null;
+            for(var key:String in resources)
+            {
+                if(resources[key] == resource)
+                {
+                    resourceKey = key;
+                    break;
+                }
+            }
+            
+            if(resourceKey == null)
+                return;
+            
+            loader.changeItemPriority(resourceKey, priority);
+        }
+        
+        public override function cancel(resource:Resource):void
+        {
+            // Find the resource in our lookup table.
+            var resourceKey:String = null;
+            for(var key:String in resources)
+            {
+                if(resources[key] == resource)
+                {
+                    resourceKey = key;
+                    break;
+                }
+            }
+            
+            if(resourceKey == null)
+                return;
+            
+            loader.remove(resourceKey);
+        }
         
         /**
          * Use the function load(onLoaded:Function = null, onProgress:Function = null, onProvideResources:Function = null):void to load resources with the bulk loader
@@ -105,14 +143,14 @@ package com.pblabs.engine.resource.provider
          *
          * The function onProgress(phase:int, progress:int):void will be called when current loading phase is progressing
          * progress (0-100)
-         *		
+         *        
          * The function onProvideResources(phase:int):Array will be called for each loading
          * phase, starting with value of 1. The function should return an array with resource objects (Object)
          * each object should have the following attributes
          * 
-         * id:String	unique id of item to load 		
-         * url:String	url of item to load 
-         * type:Class	PBE resource type class
+         * id:String    unique id of item to load         
+         * url:String    url of item to load 
+         * type:Class    PBE resource type class
          * 
          * if the onProvideResources function is omitted the overidden function provideResources 
          * will be called on the derived subclass
@@ -122,7 +160,7 @@ package com.pblabs.engine.resource.provider
          * @param onProvideResources Function that will provide Array with resource objects that have to be loaded
          */
         public function load(onLoaded:Function = null, onProgress:Function = null, onProvideResources:Function = null):void
-        {			
+        {            
             // set event/functions
             this.onLoaded = onLoaded;
             this.onProgress = onProgress;
@@ -131,7 +169,7 @@ package com.pblabs.engine.resource.provider
             // of the derived class will be called to retrieve the resources
             this.onProvideResources = onProvideResources;
             
-            // starting phase = 1	
+            // starting phase = 1    
             _phase = 1;
             
             // attach processed and progress events to BulkLoader
@@ -139,10 +177,10 @@ package com.pblabs.engine.resource.provider
                 loader.addEventListener(BulkProgressEvent.COMPLETE, resourcesLoaded)
             
             if (!loader.hasEventListener(BulkProgressEvent.PROGRESS))
-                loader.addEventListener(BulkProgressEvent.PROGRESS, resourcesProgress)			
+                loader.addEventListener(BulkProgressEvent.PROGRESS, resourcesProgress)            
             
             // load resources from first phase
-            loadResources();				 			
+            loadResources();                             
         }
         
         // -------------------------------------------------------------------
@@ -151,13 +189,13 @@ package com.pblabs.engine.resource.provider
         
         private function resourceLoaded(event:Event):void
         {
-            // if resource of current LoadingItem exists, initialize it. 			
+            // if resource of current LoadingItem exists, initialize it.             
             if (resources[(event.currentTarget as LoadingItem).id]!=null)
             {
                 // get content from bulkLoader and release memory
-                var content:* = loader.getContent( (event.currentTarget as LoadingItem).id , true);			   
+                var content:* = loader.getContent( (event.currentTarget as LoadingItem).id , true);               
                 
-                // initalize resource with the content from bulkloader						
+                // initalize resource with the content from bulkloader                        
                 if (content is Bitmap)
                 {
                     // initialize the ImageResource with a copy of the 'raw' BitmapData
@@ -168,16 +206,16 @@ package com.pblabs.engine.resource.provider
                 else
                     (resources[(event.currentTarget as LoadingItem).id] as Resource).initialize(content);
             }
-        }		
+        }        
         
         private function resourceError(event:ErrorEvent):void
         {
-            // if resource of current LoadingItem exists, notify that is has failed 			
+            // if resource of current LoadingItem exists, notify that is has failed             
             if (resources[(event.currentTarget as LoadingItem).id]!=null)
             {
                 (resources[(event.currentTarget as LoadingItem).id] as Resource).fail(event.text);
             }
-        }		
+        }        
         
         /**
          * override this method to provide resources to be loaded in each phase
@@ -185,15 +223,15 @@ package com.pblabs.engine.resource.provider
          * 
          * each object should have the following attributes
          * 
-         * id:String	unique id of item to load 		
-         * url:String	url of item to load 
-         * type:Class	PBE resource type class
+         * id:String    unique id of item to load         
+         * url:String    url of item to load 
+         * type:Class    PBE resource type class
          * 
          * @return Array with resource objects
          */
         protected function provideResources():Array
-        {	
-            return new Array();				
+        {    
+            return new Array();                
         }
         
         
@@ -214,7 +252,7 @@ package com.pblabs.engine.resource.provider
             _phase++;
             
             // load resources from next phase
-            loadResources();			  
+            loadResources();              
         } 
         
         /**
@@ -232,7 +270,7 @@ package com.pblabs.engine.resource.provider
          * phase and will start BulkLoader so the resources will be loaded
          */         
         private function loadResources():void
-        {			
+        {            
             // get array with bulk resources of the current phase 
             if (onProvideResources!=null)
                 bulkResources = onProvideResources(phase);
@@ -241,7 +279,7 @@ package com.pblabs.engine.resource.provider
             
             // add the provided resources to BulkLoader
             if (bulkResources && bulkResources.length>0)
-            {	
+            {    
                 for (var r:int=0; r<bulkResources.length; r++)
                 {
                     var resourceIdentifier:String = bulkResources[r].url.toLowerCase() + bulkResources[r].type;
@@ -249,7 +287,7 @@ package com.pblabs.engine.resource.provider
                         bulkResources[r].type )
                     {
                         // this object is a valid bulk loader object so add it to BulkLoader
-                        loader.add(bulkResources[r].url, { id : resourceIdentifier } );				
+                        loader.add(bulkResources[r].url, { id : resourceIdentifier } );                
                     }
                 }
                 
@@ -282,7 +320,7 @@ package com.pblabs.engine.resource.provider
                         var content:* = loader.getContent( resourceIdentifier , true);
                         resource.filename = bulkResources[r].url;
                         
-                        // initalize resource with the content from bulkloader						
+                        // initalize resource with the content from bulkloader                        
                         if (content is Bitmap)
                         {
                             // initialize the ImageResource with a copy of the 'raw' BitmapData
@@ -293,12 +331,12 @@ package com.pblabs.engine.resource.provider
                         else
                             resource.initialize(content);
                         
-                        // set lookup for later resource retrieval						
+                        // set lookup for later resource retrieval                        
                         resources[resourceIdentifier] = resource
                     }
-                }				
-            }			
-        }		
+                }                
+            }            
+        }        
         
         
         // -------------------------------------------------------------------

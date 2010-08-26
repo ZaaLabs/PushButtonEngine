@@ -8,6 +8,7 @@
  ******************************************************************************/
 package com.pblabs.engine.serialization
 {
+   import com.pblabs.engine.core.IPBContext;
    import com.pblabs.engine.debug.Logger;
    
    import flash.utils.Dictionary;
@@ -61,7 +62,7 @@ package com.pblabs.engine.serialization
       /**
        * @inheritDoc
        */
-      public function deserialize(xml:XML):*
+      public function deserialize(xml:XML, context:IPBContext):*
       {
          var stringValue:String = xml.toString();
          if (!typeMap[stringValue])

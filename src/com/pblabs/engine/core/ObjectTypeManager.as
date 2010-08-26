@@ -29,6 +29,14 @@ package com.pblabs.engine.core
             return _typeCount;
         }
         
+        public function getTypeInstance(typeName:String):ObjectType
+        {
+            var ot:ObjectType = new ObjectType();
+            ot.manager = this;
+            ot.typeName = typeName;
+            return ot;
+        }
+        
         /**
          * Gets the number associated with a specified object type, registering it if
          * necessary.

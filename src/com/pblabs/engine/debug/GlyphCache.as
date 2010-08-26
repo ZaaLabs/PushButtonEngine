@@ -5,15 +5,12 @@ package com.pblabs.engine.debug
     import flash.text.TextField;
     import flash.text.TextFormat;
     
-
     /**
      * Helper class to cache glyphs as bitmaps and draw them fast, with color.
-     * @author beng
-     * 
      */
     public class GlyphCache
     {
-        function GlyphCache()
+        public function GlyphCache()
         {
             // Set up the text field.
             _textField.setTextFormat(_textFormat);

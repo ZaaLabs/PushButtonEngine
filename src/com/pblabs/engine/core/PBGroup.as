@@ -19,6 +19,9 @@ package com.pblabs.engine.core
         
         internal function addToGroup(item:IPBObject):Boolean
         {
+			if(item.owningGroup != this && item.owningGroup != null)
+				throw new Error("Adding IPBObject to two groups at the same time!");
+			
             items.push(item);
             return true;
         }

@@ -16,6 +16,9 @@ package com.pblabs.screens
      */
 	public class BaseScreen extends Sprite implements IScreen
 	{
+		[Inject]
+		public var screenManager:ScreenManager;
+		
 		public function onShow():void
 		{
 		}

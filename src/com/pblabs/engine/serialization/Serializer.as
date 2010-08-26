@@ -8,13 +8,14 @@
  ******************************************************************************/
 package com.pblabs.engine.serialization
 {
+    import com.pblabs.engine.core.IEntity;
+    import com.pblabs.engine.core.IEntityComponent;
+    import com.pblabs.engine.core.IPBContext;
     import com.pblabs.engine.debug.Logger;
-    import com.pblabs.engine.entity.IEntity;
-     import com.pblabs.engine.entity.IEntityComponent;
-     import flash.geom.Point;
-     import flash.utils.getQualifiedClassName;
     
+     import flash.geom.Point;
     import flash.utils.Dictionary;
+     import flash.utils.getQualifiedClassName;
     
     /**
      * Singleton class for serializing and deserializing objects. This class 
@@ -26,18 +27,8 @@ package com.pblabs.engine.serialization
      */
     public class Serializer
     {
-        /**
-         * Gets the singleton instance of the Serializer class.
-         */
-        public static function get instance():Serializer
-        {
-            if (!_instance)
-                _instance = new Serializer();
-            
-            return _instance;
-        }
-        
-        private static var _instance:Serializer = null;
+        [Inject]
+        public var context:IPBContext;
         
         public function Serializer()
         {
@@ -117,7 +108,7 @@ package com.pblabs.engine.serialization
             // Dispatch our special cases - entities and ISerializables.
             if (object is ISerializable)
             {
-                return ISerializable(object).deserialize(xml);
+                return ISerializable(object).deserialize(xml, context);
             }
             else if (object is IEntity)
             {
@@ -210,8 +201,8 @@ package com.pblabs.engine.serialization
         private function dserializeComplex(object:*, xml:XML, typeHint:String):*
         {
             var isDynamic:Boolean = (object is Array) || (object is Dictionary) || (TypeUtility.isDynamic(object));
-            var xmlPath:String = '';			
-			
+            var xmlPath:String = '';            
+            
             for each (var fieldXML:XML in xml.*)
             {
                 // Figure out the field we're setting, and make sure it is present.
@@ -324,8 +315,9 @@ package com.pblabs.engine.serialization
         
         private function serializeComplex(object:*, xml:XML):void
         {
-        	if(object==null) return;
-        	
+            if(object==null) 
+                return;
+            
             var classDescription:XML = TypeUtility.getTypeDescription(object);
             for each(var property:XML in classDescription.child("accessor"))
             {
@@ -374,16 +366,13 @@ package com.pblabs.engine.serialization
                 if (!isNaN(object[propertyName]))
                 {
                     // Is a number...
-                    propertyXML.@type = getQualifiedClassName(1.0).replace(/::/,".");
+                    propertyXML.@type = getQualifiedClassName(1.0);
                 }
                 else
                 {
-					// Replace the "::" with "." for a compatible serialization
-                    propertyXML.@type = getQualifiedClassName(object[propertyName]).replace(/::/,".");
+                    propertyXML.@type = getQualifiedClassName(object[propertyName]);
                 }
-				
             }
-			
             
             
             //Note (giggsy): I don't know why, but this code suddenly didn't compile anymore with FlashDevelop,
@@ -541,6 +530,7 @@ package com.pblabs.engine.serialization
             if (nameReference != "" || componentReference != "" || componentName != "" || objectReference != "")
             {
                 var reference:ReferenceNote = new ReferenceNote();
+                reference.context = context;
                 reference.owner = object;
                 reference.fieldName = fieldName;
                 reference.nameReference = nameReference;
@@ -636,6 +626,7 @@ package com.pblabs.engine.serialization
                 type = TypeUtility.getClassFromName(TypeUtility.getFieldType(object, fieldName));
             
             var resource:ResourceNote = new ResourceNote();
+            resource.context = context;
             resource.owner = object;
             resource.fieldName = fieldName;
             resource.load(filename, type);
@@ -674,23 +665,26 @@ package com.pblabs.engine.serialization
 }
 
 import com.pblabs.engine.PBE;
+import com.pblabs.engine.core.IEntity;
+import com.pblabs.engine.core.IEntityComponent;
+import com.pblabs.engine.core.IPBContext;
 import com.pblabs.engine.core.NameManager;
-import com.pblabs.engine.core.TemplateManager;
 import com.pblabs.engine.debug.Logger;
-import com.pblabs.engine.entity.IEntity;
-import com.pblabs.engine.entity.IEntityComponent;
 import com.pblabs.engine.resource.Resource;
 import com.pblabs.engine.resource.ResourceManager;
 import com.pblabs.engine.serialization.*;
+import com.pblabs.engine.serialization.TemplateManager;
 
 internal class ResourceNote
 {
+    public var context:IPBContext = null;
+    
     public var owner:* = null;
     public var fieldName:String = null;
     
     public function load(filename:String, type:Class):void
     {
-        var resource:Resource = PBE.resourceManager.load(filename, type, onLoaded, onFailed);
+        var resource:Resource = context.resourceManager.load(filename, type, onLoaded, onFailed);
         
         if(resource)
             owner[fieldName] = resource;
@@ -698,18 +692,20 @@ internal class ResourceNote
     
     public function onLoaded(resource:Resource):void
     {
-        Serializer.instance.removeResource(resource.filename);
+        context.serializer.removeResource(resource.filename);
     }
     
     public function onFailed(resource:Resource):void
     {
         Logger.error(owner, "set " + fieldName, "No resource was found with filename " + resource.filename + ".");
-        Serializer.instance.removeResource(resource.filename);
+        context.serializer.removeResource(resource.filename);
     }
+
 }
 
 internal class ReferenceNote
 {
+    public var context:IPBContext = null;
     public var owner:* = null;
     public var fieldName:String = null;
     public var nameReference:String = null;
@@ -724,7 +720,7 @@ internal class ReferenceNote
         // Look up by name.
         if (nameReference != "")
         {
-            var namedObject:IEntity = PBE.nameManager.lookup(nameReference);
+            var namedObject:IEntity = context.lookupEntity(nameReference);
             if (!namedObject)
                 return false;
             
@@ -736,7 +732,7 @@ internal class ReferenceNote
         // Look up a component on a named object by name (first) or type (second).
         if (componentReference != "")
         {
-            var componentObject:IEntity = PBE.nameManager.lookup(componentReference);
+            var componentObject:IEntity = context.lookupEntity(componentReference);
             if (!componentObject)
                 return false;
             
@@ -775,7 +771,7 @@ internal class ReferenceNote
         // Or instantiate a new entity.
         if (objectReference != "")
         {
-            owner[fieldName] = PBE.templateManager.instantiateEntity(objectReference);
+            owner[fieldName] = context.templateManager.instantiateEntity(objectReference);
             reportSuccess();
             return true;
         }

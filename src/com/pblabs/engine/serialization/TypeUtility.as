@@ -100,7 +100,7 @@ package com.pblabs.engine.serialization
                 if(!suppressError)
                 {
                     Logger.warn(null, "Instantiate", "Failed to instantiate " + className + " due to " + e.toString());
-                    Logger.warn(null, "Instantiate", "Is " + className + " included in your SWF? Make sure you call PBE.registerType(" + className + "); somewhere in your project.");				 
+                    Logger.warn(null, "Instantiate", "Is " + className + " included in your SWF? Make sure you call context.registerType(" + className + "); somewhere in your project.");				 
                 }
             }
             
@@ -280,6 +280,37 @@ package com.pblabs.engine.serialization
             }
             
             return _typeDescriptions[className];
+        }
+        
+        public static function getListOfPublicFields(object:*):Array
+        {
+            var fields:Array = [];
+            
+            if(object == null || object == undefined)
+                return fields;
+            
+            // Get the list of public fields.
+            var sourceFields:XML = getTypeDescription(object);
+            
+            for each(var fieldInfo:XML in sourceFields.*)
+            {
+                // Skip anything that is not a field.
+                if(fieldInfo.name() != "variable" && fieldInfo.name() != "accessor")
+                    continue;
+                
+                // Skip write-only stuff.
+                if(fieldInfo.@access == "writeonly")
+                    continue;
+                
+                var fieldName:String = fieldInfo.@name;
+                fields.push(fieldName);
+            }
+            
+            // Deal with dynamic fields, too.
+            for(var field:String in object)
+                fields.push(field);
+            
+            return fields;
         }
         
         private static var _typeDescriptions:Dictionary = new Dictionary();

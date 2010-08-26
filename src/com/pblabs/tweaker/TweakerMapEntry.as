@@ -8,7 +8,7 @@
  ******************************************************************************/
 package com.pblabs.tweaker
 {
-	import com.pblabs.engine.entity.PropertyReference;
+	import com.pblabs.engine.core.PropertyReference;
    
    /** 
     * Map a cell (specified in standard spreadsheet notation, ie E4) to

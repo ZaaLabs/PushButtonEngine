@@ -9,10 +9,9 @@
 package com.pblabs.engine.core
 {
     import com.pblabs.engine.debug.Logger;
-    import com.pblabs.engine.entity.IEntity;
-    import com.pblabs.engine.entity.IEntityComponent;
     
     import flash.utils.Dictionary;
+    import com.pblabs.engine.serialization.TemplateManager;
     
     /**
      * The name manager stores references to PBObjects that have been given
@@ -45,7 +44,6 @@ package com.pblabs.engine.core
             
             if(TemplateManager.VERBOSE_LOGGING)
                 Logger.print(this, "Registering PBObject '" + object.name + "', alias '" + object.alias + "'");
-            
             
             if(isNameValid)
                 _objects[object.name] = object;
@@ -164,6 +162,6 @@ package com.pblabs.engine.core
             return entity.lookupComponentByName(componentName);
         }
         
-        private var _objects:Dictionary = new Dictionary();
+        protected var _objects:Dictionary = new Dictionary();
     }
 }

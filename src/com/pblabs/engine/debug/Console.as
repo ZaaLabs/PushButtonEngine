@@ -10,7 +10,7 @@ package com.pblabs.engine.debug
 {
     import com.pblabs.engine.PBE;
     import com.pblabs.engine.PBUtil;
-    import com.pblabs.engine.core.IPBObject;
+    import com.pblabs.engine.core.IPBObject;    import com.pblabs.engine.core.IPBContext;
     import com.pblabs.engine.core.InputKey;
     import com.pblabs.engine.core.PBGroup;
     import com.pblabs.engine.core.PBObject;
@@ -20,6 +20,7 @@ package com.pblabs.engine.debug
     import com.pblabs.engine.entity.PropertyReference;
     import com.pblabs.engine.serialization.TypeUtility;
     import com.pblabs.engine.version.VersionType;
+    import com.pblabs.engine.pb_internal;
     
     import flash.display.DisplayObject;
     import flash.display.DisplayObjectContainer;
@@ -27,6 +28,9 @@ package com.pblabs.engine.debug
     import flash.external.ExternalInterface;
     import flash.geom.Point;
     import flash.system.Security;
+    import flash.utils.getDefinitionByName;
+    
+    use namespace pb_internal;
     
     /**
      * Process simple text commands from the user. Useful for debugging.
@@ -51,6 +55,15 @@ package com.pblabs.engine.debug
         public static var verbosity:int = 0;
         public static var showStackTrace:Boolean = false;
         
+        protected static var _currentContext:IPBContext = null;
+        
+        public static function get currentContext():IPBContext
+        {
+            if(_currentContext == null)
+                _currentContext = PBE.defaultContext;
+            
+            return _currentContext;
+        }
         
         /**
          * Register a command which the user can execute via the console.
@@ -125,7 +138,7 @@ package com.pblabs.engine.debug
                     var str:String = test[0];
                     str = PBUtil.trim(str, "'");
                     str = PBUtil.trim(str, "\"");
-                    args.push(str);	// If no more matches can be found, test will be null
+                    args.push(str);    // If no more matches can be found, test will be null
                 }
             }
             
@@ -190,7 +203,7 @@ package com.pblabs.engine.debug
             
             registerCommand("version", function():void
             {
-                Logger.print(Console, PBE.versionDetails.toString());
+                Logger.print(Console, currentContext.versionDetails.toString());
             }, "Echo PushButton Engine version information.");
             
             registerCommand("fps", function():void
@@ -198,12 +211,13 @@ package com.pblabs.engine.debug
                 if (!_stats)
                 {
                     _stats = new Stats();
-                    PBE.mainStage.addChild(_stats);
+                    currentContext.inject(_stats);
+                    currentContext.mainStage.addChild(_stats);
                     Logger.print(Console, "Enabled FPS display.");
                 }
                 else
                 {
-                    PBE.mainStage.removeChild(_stats);
+                    currentContext.mainStage.removeChild(_stats);
                     _stats = null;
                     Logger.print(Console, "Disabled FPS display.");
                 }
@@ -217,21 +231,17 @@ package com.pblabs.engine.debug
             
             registerCommand("listDisplayObjects", function():void
             {
-                var sum:int = Console._listDisplayObjects(PBE.mainStage, 0);
+                var sum:int = Console._listDisplayObjects(currentContext.mainStage, 0);
                 Logger.print(Console, " " + sum + " total display objects.");
             }, "Outputs the display list.");
             
             registerCommand("tree", function():void
             {
-                var sum:int = Console._listPBObjects(PBE.rootGroup, 0);
+                var sum:int = Console._listPBObjects(currentContext.rootGroup, 0);
                 Logger.print(Console, " " + sum + " total PBObjects.");
             }, "List all the PBObjects in the game.");
             
             /*** Commands for Property References ***/
-            // Create dummy entity to make these propertyReferences work
-            var dummyEntity:IEntity = PBE.allocateEntity();
-            dummyEntity.initialize("console");
-            
             registerCommand("set", _setProperty,
                 "Sets a property reference. usage: set #entity.component.property false");
             
@@ -246,6 +256,94 @@ package com.pblabs.engine.debug
             
             registerCommand("dispatch", _dispatchEvent,
                 "Dispatches an event on an entity's event bus. usage: dispatch #entity eventType");
+            
+            /*** Commands for Context ***/
+            registerCommand("listContexts", function():void
+            {
+                Logger.print(this, "Contexts:");
+                
+                for(var i:int = 0; i<PBE.contextList.length; i++)
+                {
+                    var c:IPBContext = PBE.contextList[i];
+                    Logger.print(this, "   #" + (i+1) + ". " + c.name);
+                }
+            }, "() List available contexts.");
+            
+            registerCommand("setContext", function(param:*):void
+            {
+                var selectedIdx:int = -1;
+                // If it's a number, go to that index.
+                var asNumber:int = parseInt(param);
+                if(asNumber > 0)
+                {
+                    // We work in 1 based for display, but internall it's 0 based.
+                    asNumber--;
+                    
+                    if(asNumber >= PBE.contextList.length)
+                    {
+                        Logger.error(this, "setContext", "Context #" + asNumber + " does not exist.");
+                        return;
+                    }
+
+                    selectedIdx = asNumber;
+                }
+                else
+                {
+                    // Otherwise try to match name.
+                    for(var i:int=0; i<PBE.contextList.length; i++)
+                    {
+                        // Filter.
+                        if(PBE.contextList[i].name.toLowerCase() != param.toLowerCase())
+                            continue;
+                        
+                        // Match!
+                        selectedIdx = i;
+                        break;
+                    }
+                    
+                    if(selectedIdx == -1)
+                    {
+                        Logger.error(this, "setContext", "Context '" + param + "' does not exist.");
+                        return;
+                    }
+                }
+                
+                _currentContext = PBE.contextList[selectedIdx];
+                Logger.print(this, "Context switched to #" + (selectedIdx+1) + " " + _currentContext.name);
+
+            }, "(name or id) Identify a context by name or number and set it as the active one.");
+                        
+            Console.registerCommand("setStatic", function(className:String, valueName:String, value:*):void
+            {                    
+                var classDef:Object = getDefinitionByName(className);
+                if (null != classDef) {
+                    Logger.print(this, "Previous value = "+classDef[valueName]);
+                    classDef[valueName] = value;
+                } else {
+                    Logger.print(this, "Class "+className+" not found.");
+                }
+                
+            }, "(className, valueName, value) - Set static value of a class.");
+            
+            Console.registerCommand("callStatic", function(className:String, funcName:String, ... args):void
+            {    
+                try{
+                    var classDef:Object = getDefinitionByName(className);
+                }catch(errObject:Error){
+                    Logger.print(this, "Class not found: "+errObject.message);
+                    return;
+                }
+                if (null != classDef) {
+                    var retVal:* = classDef[funcName].apply(null, args);
+                    if (null != retVal) {
+                        Logger.print(this, "Returned "+retVal);
+                    }
+                } else {
+                    Logger.print(this, "Class "+className+" not found.");
+                }
+                
+            }, "className funcName [args] - Call static function of a class.");
+                        
             
             if(ExternalInterface.available)
             {
@@ -263,7 +361,7 @@ package com.pblabs.engine.debug
                 return;
             }
             
-            var entity:IEntity = PBE.lookupEntity("console");
+            var entity:IEntity = currentContext.allocateEntity();
             var pr:PropertyReference = new PropertyReference(reference);
             
             var downcase:String = String(value).toLowerCase();
@@ -309,7 +407,7 @@ package com.pblabs.engine.debug
                 return;
             }
             
-            var entity:IEntity = PBE.lookupEntity("console");
+            var entity:IEntity = currentContext.allocateEntity();
             var pr:PropertyReference = new PropertyReference(reference);
             
             Logger.print(Console, entity.getProperty(pr));
@@ -324,7 +422,8 @@ package com.pblabs.engine.debug
                 return;
             }
             
-            var entity:IEntity = PBE.lookupEntity("console");
+            var entityName:String = reference.substring(1).split(".")[0];
+            var entity:IEntity = currentContext.lookupEntity(entityName);
             var pr:PropertyReference = new PropertyReference(reference);
             
             var f:* = entity.getProperty(pr);
@@ -356,7 +455,7 @@ package com.pblabs.engine.debug
             }
             
             // remove the # from the entity and look it up
-            var entity:IEntity = PBE.lookupEntity(reference.substring(1));
+            var entity:IEntity = currentContext.lookupEntity(reference.substring(1));
             
             if (entity)
             {
@@ -373,7 +472,7 @@ package com.pblabs.engine.debug
         {
             if(ExternalInterface.available)
             {
-                Logger.info(Console, "exit", ExternalInterface.call("window.close"));	
+                Logger.info(Console, "exit", ExternalInterface.call("window.close"));    
             }
             else
             {
@@ -419,10 +518,22 @@ package com.pblabs.engine.debug
             if (!parent)
                 return 1;
             
-            var sum:int = 1;
-            for (var i:int = 0; i < parent.numChildren; i++)
-                sum += _listDisplayObjects(parent.getChildAt(i), indent + 1);
-            return sum;
+            var sum:int, i:int=0;
+            var parentUntyped:* = parent;
+            if (parentUntyped.hasOwnProperty("rawChildren")) 
+            {
+                sum = 1;
+                for (i = 0; i < parentUntyped.rawChildren.numChildren; i++)
+                    sum += _listDisplayObjects(parentUntyped.rawChildren.getChildAt(i), indent+1);
+                return sum;                
+            }
+             else 
+             {
+                sum = 1;
+                for (i = 0; i < parent.numChildren; i++)
+                    sum += _listDisplayObjects(parent.getChildAt(i), indent + 1);
+                return sum;
+            }
         }
         
         protected static function _listPBObjects(current:IPBObject, indent:int):int

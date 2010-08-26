@@ -10,6 +10,8 @@ package com.pblabs.engine.debug
 {
     import com.pblabs.engine.PBE;
     import com.pblabs.engine.serialization.TypeUtility;
+    import com.pblabs.engine.util.version.VersionDetails;
+    import com.pblabs.engine.util.version.VersionUtil;
 
     /**
      * The Logger class provides mechanisms to print and listen for errors, warnings,
@@ -46,6 +48,10 @@ package com.pblabs.engine.debug
          */
         public static function startup():void
         {
+            // Don't start more than once!
+            if(started)
+                return;
+            
             // Put default listeners into the list.
             registerListener(new TraceAppender());
             
@@ -54,12 +60,21 @@ package com.pblabs.engine.debug
             
             // Process pending messages.
             started = true;
-            for(var i:int=0; i<pendingEntries.length; i++)
-                processEntry(pendingEntries[i]);
+
+            // Print out a helpful version string.
+            var vd:VersionDetails = VersionUtil.checkVersion(PBE.mainStage);
+            Logger.print(Logger, vd.toString());
+            Logger.print(Logger, new Date().toString());
+
+            // Then print out any logging.
+            if (pendingEntries) {
+                for(var i:int=0; i<pendingEntries.length; i++)
+                    processEntry(pendingEntries[i]);
             
-            // Free up the pending entries memory.
-            pendingEntries.length = 0;
-            pendingEntries = null;
+                // Free up the pending entries.
+                pendingEntries.length = 0;
+                pendingEntries = null;
+            }
         }
         
         /**
@@ -112,50 +127,50 @@ package com.pblabs.engine.debug
             processEntry(entry);
         }
         
-		/**
-		 * Prints an info message to the log. Log entries created with this method
-		 * will have the INFO type.
-		 * 
-		 * @param reporter The object that reported the warning. This can be null.
-		 * @param method The name of the method that the warning was reported from.
-		 * @param message The warning to print to the log.
-		 */
-		public static function info(reporter:*, method:String, message:String):void
-		{
+        /**
+         * Prints an info message to the log. Log entries created with this method
+         * will have the INFO type.
+         * 
+         * @param reporter The object that reported the warning. This can be null.
+         * @param method The name of the method that the warning was reported from.
+         * @param message The warning to print to the log.
+         */
+        public static function info(reporter:*, method:String, message:String):void
+        {
             // Early out if we are disabled.
             if(disabled)
                 return;
 
             var entry:LogEntry = new LogEntry();
-			entry.reporter = TypeUtility.getClass(reporter);
-			entry.method = method;
-			entry.message = method + " - " + message;
-			entry.type = LogEntry.INFO;
-			processEntry(entry);
-		}
-		
-		/**
-		 * Prints a debug message to the log. Log entries created with this method
-		 * will have the DEBUG type.
-		 * 
-		 * @param reporter The object that reported the debug message. This can be null.
-		 * @param method The name of the method that the debug message was reported from.
-		 * @param message The debug message to print to the log.
-		 */
-		public static function debug(reporter:*, method:String, message:String):void
-		{
+            entry.reporter = TypeUtility.getClass(reporter);
+            entry.method = method;
+            entry.message = method + " - " + message;
+            entry.type = LogEntry.INFO;
+            processEntry(entry);
+        }
+        
+        /**
+         * Prints a debug message to the log. Log entries created with this method
+         * will have the DEBUG type.
+         * 
+         * @param reporter The object that reported the debug message. This can be null.
+         * @param method The name of the method that the debug message was reported from.
+         * @param message The debug message to print to the log.
+         */
+        public static function debug(reporter:*, method:String, message:String):void
+        {
             // Early out if we are disabled.
             if(disabled)
                 return;
 
             var entry:LogEntry = new LogEntry();
-			entry.reporter = TypeUtility.getClass(reporter);
-			entry.method = method;
-			entry.message = method + " - " + message;
-			entry.type = LogEntry.DEBUG;
-			processEntry(entry);
-		}
-		
+            entry.reporter = TypeUtility.getClass(reporter);
+            entry.method = method;
+            entry.message = method + " - " + message;
+            entry.type = LogEntry.DEBUG;
+            processEntry(entry);
+        }
+        
         /**
          * Prints a warning message to the log. Log entries created with this method
          * will have the WARNING type.
@@ -258,13 +273,13 @@ package com.pblabs.engine.debug
             owner = _owner;
             enabled = defaultEnabled;
         }
-		
-		public function info(method:String, message:String):void
-		{
-			if(enabled)
-				Logger.info(owner, method, message);
-		}
-		
+        
+        public function info(method:String, message:String):void
+        {
+            if(enabled)
+                Logger.info(owner, method, message);
+        }
+        
         public function warn(method:String, message:String):void
         {
             if(enabled)

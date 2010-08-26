@@ -8,8 +8,8 @@
  ******************************************************************************/
 package com.pblabs.sound
 {
-    import com.pblabs.engine.PBE;
-    import com.pblabs.engine.components.TickedComponent;
+
+    import com.pblabs.engine.time.TickedComponent;
     import com.pblabs.engine.resource.SoundResource;
     
     /**
@@ -37,9 +37,9 @@ package com.pblabs.sound
             if(!handle)
             {
                 if (music)
-                    handle = PBE.soundManager.play(music, SoundManager.MUSIC_MIXER_CATEGORY, 0, int.MAX_VALUE);
+                    handle = context.soundManager.play(music, SoundManager.MUSIC_MIXER_CATEGORY, 0, int.MAX_VALUE);
                 else if (musicUrl)
-                    handle = PBE.soundManager.stream(musicUrl, SoundManager.MUSIC_MIXER_CATEGORY, 0, int.MAX_VALUE);
+                    handle = context.soundManager.stream(musicUrl, SoundManager.MUSIC_MIXER_CATEGORY, 0, int.MAX_VALUE);
             }
             else if(!handle.isPlaying)
             {

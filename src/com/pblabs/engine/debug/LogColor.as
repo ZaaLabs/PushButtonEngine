@@ -10,12 +10,12 @@ package com.pblabs.engine.debug
 {
     public class LogColor
     {
-        public static const DEBUG:String 	= "#DDDDDD";
-        public static const INFO:String 	= "#BBBBBB";
-        public static const WARN:String 	= "#FF6600";
-        public static const ERROR:String 	= "#FF0000";
-        public static const MESSAGE:String 	= "#FFFFFF";
-        public static const CMD:String 		= "#00DD00";
+        public static const DEBUG:String        = "#AAAAAA";
+        public static const INFO:String         = "#DDDDDD";
+        public static const WARN:String         = "#BB6600";
+        public static const ERROR:String        = "#BB4400";
+        public static const MESSAGE:String      = "#DDDDDD";
+        public static const CMD:String          = "#22AA22";
         
         public static function getColor(level:String):String
         {
@@ -31,7 +31,7 @@ package com.pblabs.engine.debug
                     return ERROR;
                 case LogEntry.MESSAGE:
                     return MESSAGE;
-                case "CMD":
+                case LogEntry.CMD:
                     return CMD;
                 default:
                     return MESSAGE;

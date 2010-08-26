@@ -8,6 +8,8 @@
  ******************************************************************************/
 package com.pblabs.engine.serialization
 {
+    import com.pblabs.engine.core.IPBContext;
+
    /**
     * Provides an interface for objects to override the default serialization
     * behavior.
@@ -45,6 +47,6 @@ package com.pblabs.engine.serialization
        * 
        * @see ../../../../../Examples/DeserializingObjects.html Deserializing Objects
        */
-      function deserialize(xml:XML):*;
+      function deserialize(xml:XML, context:IPBContext):*;
    }
 }

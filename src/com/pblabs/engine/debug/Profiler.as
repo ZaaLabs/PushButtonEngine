@@ -8,10 +8,13 @@
  ******************************************************************************/
 package com.pblabs.engine.debug
 {
+    import com.pblabs.engine.pb_internal;
+
+    use namespace pb_internal;
    
-   import com.pblabs.engine.core.InputKey;
    import com.pblabs.engine.PBE;
-   import com.pblabs.engine.core.sprintf;
+    import com.pblabs.engine.input.InputKey;
+    import com.pblabs.engine.util.sprintf;
    
    import flash.utils.getTimer;
 
@@ -54,7 +57,7 @@ package com.pblabs.engine.debug
          {
             // Hack - if they press, then release insert, start/stop and dump
             // the profiler.
-            if(PBE.isKeyDown(InputKey.P))
+                if (PBE.defaultContext!=null && PBE.defaultContext.isKeyDown(InputKey.P)) // TODO: context.isKeyDown(InputKey.P))
             {
                if(!enabled)
                {
@@ -117,8 +120,10 @@ package com.pblabs.engine.debug
          var elapsedTime:int = flash.utils.getTimer() - _currentNode.startTime;
          _currentNode.activations++;
          _currentNode.totalTime += elapsedTime;
-         if(elapsedTime > _currentNode.maxTime) _currentNode.maxTime = elapsedTime;
-         if(elapsedTime < _currentNode.minTime) _currentNode.minTime = elapsedTime;
+            if (elapsedTime > _currentNode.maxTime)
+                _currentNode.maxTime=elapsedTime;
+            if (elapsedTime < _currentNode.minTime)
+                _currentNode.minTime=elapsedTime;
 
          // Pop the stack.
          _currentNode = _currentNode.parent;

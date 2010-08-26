@@ -23,11 +23,16 @@
 
 package com.pblabs.engine.debug
 {
+    import com.pblabs.engine.PBE;
+    import com.pblabs.engine.core.IPBContext;
+    import com.pblabs.engine.time.ProcessManager;
+    
     import flash.display.Bitmap;
     import flash.display.BitmapData;
     import flash.display.Sprite;
     import flash.events.Event;
     import flash.events.MouseEvent;
+    import flash.events.TimerEvent;
     import flash.geom.Rectangle;
     import flash.system.Capabilities;
     import flash.system.System;
@@ -42,7 +47,10 @@ package com.pblabs.engine.debug
             addEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
         }
 
-        private var fps:int, timer:int, ms:int, msPrev:int = 0;
+        [Inject]
+        public var context:IPBContext;
+        
+        private var timer:int, ms:int, msPrev:int = 0;
 
         private var fpsText:TextField, msText:TextField, memText:TextField, verText:TextField, format:TextFormat;
 
@@ -109,38 +117,51 @@ package com.pblabs.engine.debug
             addEventListener(MouseEvent.CLICK, onClick);
             addEventListener(MouseEvent.MOUSE_OVER, onMouseOver);
             addEventListener(MouseEvent.MOUSE_OUT, onMouseOut);
-            addEventListener(Event.ENTER_FRAME, update);
+            (context.processManager as ProcessManager).timer.addEventListener(TimerEvent.TIMER, update);
+            
+            fpsTimes.length = 15;
+            
+            stage.invalidate();
         }
 
         private function onClick(event:MouseEvent):void
         {
             (this.mouseY > this.height * .35) ? stage.frameRate-- : stage.frameRate++;
-            fpsText.text = "FPS: " + fps + " / " + stage.frameRate;
+            fpsText.text = "FPS: X / " + stage.frameRate;
+            stage.invalidate();
         }
 
         private function onMouseOut(event:MouseEvent):void
         {
             ver.visible = false;
+            stage.invalidate();
         }
 
         private function onMouseOver(event:MouseEvent):void
         {
             ver.visible = true;
+            stage.invalidate();
         }
 
+        public var fpsTimes:Vector.<Number> = new Vector.<Number>();
+        public var fpsTimesIndex:int = 0;
+        
         private function update(e:Event):void
         {
             timer = getTimer();
-            fps++;
 
-            if (timer - 250 > msPrev)
-            {
+            const frameTime:Number = (timer - ms);
+            const stageFps:Number = stage ? stage.frameRate : 0;
+            fpsTimesIndex = (fpsTimesIndex + 1) % 15;
+            fpsTimes[fpsTimesIndex] = frameTime;
+            const avgTime:Number = (fpsTimes[0] + fpsTimes[1] + fpsTimes[2] + fpsTimes[3] + fpsTimes[4] 
+                                  + fpsTimes[5] + fpsTimes[6] + fpsTimes[7] + fpsTimes[8] + fpsTimes[9] 
+                                  + fpsTimes[10] + fpsTimes[11] + fpsTimes[12] + fpsTimes[13] + fpsTimes[14]) / 15.0;
+            
                 msPrev = timer;
                 mem = Number((System.totalMemory * 0.000000954).toFixed(3));
 
-                var fpsGraph:int;
-                if (stage)
-                    fpsGraph = Math.min(50, 50 / stage.frameRate * fps);
+            var fpsGraph:int = Math.min(50, 50 / stageFps * avgTime);
                 var memGraph:Number = Math.min(50, Math.sqrt(Math.sqrt(mem * 5000))) - 2;
 
                 graph.scroll(1, 0);
@@ -149,22 +170,22 @@ package com.pblabs.engine.debug
 
                 // Do a vertical line if the time was over 100ms
                 if (timer - ms > 100)
+            {
                     for (var i:int = 0; i < graph.height; i++)
                         graph.setPixel32(0, graph.height - i, 0xFF0000);
-
-                graph.setPixel32(0, graph.height - fpsGraph, 0xFFFF00);
-                graph.setPixel32(0, graph.height - ((timer - ms) >> 1), 0x00FF00);
-                graph.setPixel32(0, graph.height - memGraph, 0x00FFFF);
-
-                if (stage)
-                    fpsText.text = "FPS: " + (fps * 4) + " / " + stage.frameRate;
-                memText.text = "MEM: " + mem;
-
-                fps = 0;
             }
 
-            msText.text = "MS: " + (timer - ms);
+                graph.setPixel32(0, graph.height - fpsGraph, 0xFFFF00);
+            graph.setPixel32(0, graph.height - (frameTime >> 1), 0x00FF00);
+                graph.setPixel32(0, graph.height - memGraph, 0x00FFFF);
+
+            fpsText.text = "FPS: " + (1000 / avgTime).toFixed(0) + " / " + stageFps;
+                memText.text = "MEM: " + mem;
+
+            msText.text = "MS: " + frameTime;
             ms = timer;
+
+            PBE.mainStage.invalidate();
         }
     }
 }

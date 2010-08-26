@@ -28,5 +28,9 @@ package com.pblabs.engine.resource.provider
          * resource from a ResourceProvider
          */
         function getResource(uri:String, type:Class, forceReload:Boolean = false):Resource;
+
+        function setPriority(resource:Resource, priority:Number):void;
+        
+        function cancel(resource:Resource):void;
     }
 }

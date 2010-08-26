@@ -9,8 +9,8 @@
 package com.pblabs.tweaker
 {
    import com.pblabs.engine.debug.Logger;
-   import com.pblabs.engine.entity.EntityComponent;
-   import com.pblabs.engine.entity.PropertyReference;
+   import com.pblabs.engine.core.EntityComponent;
+   import com.pblabs.engine.core.PropertyReference;
    
    import flash.events.Event;
    import flash.events.HTTPStatusEvent;

@@ -9,6 +9,7 @@
 package com.pblabs.engine.resource
 {
     import com.pblabs.engine.debug.Logger;
+    import com.pblabs.engine.resource.provider.IResourceProvider;
     
     import flash.display.Loader;
     import flash.events.Event;
@@ -45,6 +46,8 @@ package com.pblabs.engine.resource
      */
     public class Resource extends EventDispatcher
     {
+        public var provider:IResourceProvider;
+        
         /**
          * The filename the resource data was loaded from.
          */
@@ -181,7 +184,7 @@ package com.pblabs.engine.resource
          */
         public function fail(message:String):void
         {
-            onFailed(message);        	
+            onFailed(message);            
         }
         
         /**

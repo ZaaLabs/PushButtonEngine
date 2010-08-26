@@ -8,7 +8,7 @@
  ******************************************************************************/
 package com.pblabs.engine.core
 {
-    import com.pblabs.engine.PBE;
+
     import com.pblabs.engine.serialization.ISerializable;
     
     [EditorData(editAs="Array", typeHint="String")]
@@ -21,6 +21,8 @@ package com.pblabs.engine.core
      */
     public class ObjectType implements ISerializable
     {
+		public var manager:ObjectTypeManager;
+		
         /**
          * The bitmask that this type wraps. This should not be used directly. Instead,
          * use the various test methods on the ObjectTypeManager.
@@ -56,10 +58,10 @@ package com.pblabs.engine.core
          */
         public function get typeName():String
         {
-            for (var i:int = 0; i < PBE.objectTypeManager.typeCount; i++)
+            for (var i:int = 0; i < manager.typeCount; i++)
             {
                 if (_bits & (1 << i))
-                    return PBE.objectTypeManager.getTypeName(1 << i);
+                    return manager.getTypeName(1 << i);
             }
             
             return "";
@@ -70,7 +72,7 @@ package com.pblabs.engine.core
          */
         public function set typeName(value:String):void
         {
-            _bits = PBE.objectTypeManager.getType(value);
+            _bits = manager.getType(value);
         }
         
         /**
@@ -79,10 +81,10 @@ package com.pblabs.engine.core
         public function get typeNames():Array
         {
             var array:Array = new Array();
-            for (var i:int = 0; i < PBE.objectTypeManager.typeCount; i++)
+            for (var i:int = 0; i < manager.typeCount; i++)
             {
                 if (_bits & (1 << i))
-                    array.push(PBE.objectTypeManager.getTypeName(1 << i));
+                    array.push(manager.getTypeName(1 << i));
             }
             
             return array;
@@ -95,7 +97,7 @@ package com.pblabs.engine.core
         {
             _bits = 0;
             for each (var typeName:String in value)
-            _bits |= PBE.objectTypeManager.getType(typeName);
+            _bits |= manager.getType(typeName);
         }
         
         
@@ -104,7 +106,7 @@ package com.pblabs.engine.core
          */
         public function add(typeName:String):void
         {
-            _bits |= PBE.objectTypeManager.getType(typeName);	  	
+            _bits |= manager.getType(typeName);	  	
         }      
         
         /**
@@ -112,7 +114,7 @@ package com.pblabs.engine.core
          */
         public function remove(typeName:String):void
         { 		
-            _bits &= (wildcard.bits - PBE.objectTypeManager.getType(typeName));	  		  	
+            _bits &= (wildcard.bits - manager.getType(typeName));	  		  	
         }
         
         /**
@@ -149,8 +151,10 @@ package com.pblabs.engine.core
          * 
          * @inheritDoc
          */
-        public function deserialize(xml:XML):*
+        public function deserialize(xml:XML, _context:IPBContext):*
         {
+			manager = _context.objectTypeManager;
+			
             if (xml.hasSimpleContent())
             {
                 typeName = xml.toString();
@@ -159,7 +163,7 @@ package com.pblabs.engine.core
             
             _bits = 0;
             for each (var childXML:XML in xml.*)
-                _bits |= PBE.objectTypeManager.getType(childXML.toString());
+                _bits |= manager.getType(childXML.toString());
             
             return this;
         }

@@ -8,9 +8,10 @@
  ******************************************************************************/
 package com.pblabs.engine.resource.provider
 {
+    import com.pblabs.engine.PBE;
+    import com.pblabs.engine.debug.Logger;
     import com.pblabs.engine.resource.Resource;
     import com.pblabs.engine.resource.ResourceManager;
-    import com.pblabs.engine.PBE;
 
     import flash.utils.Dictionary;
     
@@ -25,14 +26,14 @@ package com.pblabs.engine.resource.provider
             // Make sure PBE is initialized - no resource manager, no love.
             if(!PBE.resourceManager)
             {
-                throw new Error("Cannot instantiate a ResourceBundle until you have called PBE.startup(this);. Move the call to new YourResourceBundle(); to occur AFTER the call to PBE.startup().");
+                throw new Error("Cannot instantiate a ResourceBundle until you have called context.startup(this);. Move the call to new YourResourceBundle(); to occur AFTER the call to context.startup().");
             }
             
             // register this ResourceProvider with the ResourceManager
             if (registerProvider)
                 PBE.resourceManager.registerResourceProvider(this);
             
-            // create the Dictionary object that will keep all resources 			
+            // create the Dictionary object that will keep all resources             
             resources = new Dictionary();
         }
         
@@ -60,9 +61,19 @@ package com.pblabs.engine.resource.provider
         protected function addResource(uri:String, type:Class, resource:Resource):void
         {
             var resourceIdentifier:String = uri.toLowerCase() + type;
-            resources[resourceIdentifier] = resource;        	
+            resources[resourceIdentifier] = resource;            
         }
         
+        public function setPriority(resource:Resource, priority:Number):void
+        {
+            Logger.warn(this, "setPriority", "No priority support in this resource provider.");
+        }
+        
+        public function cancel(resource:Resource):void
+        {
+            Logger.warn(this, "cancel", "No cancel support in this resource provider.");
+        }
+
         // ------------------------------------------------------------
         // private and protected variables
         // ------------------------------------------------------------
