@@ -2,7 +2,6 @@ package com.pblabs.engine.core
 {
     import com.pblabs.engine.input.InputKey;
     import com.pblabs.engine.input.InputManager;
-    import com.pblabs.engine.prefs.IPrefsManager;
     import com.pblabs.engine.resource.Resource;
     import com.pblabs.engine.resource.ResourceManager;
     import com.pblabs.engine.serialization.LevelManager;
@@ -11,8 +10,8 @@ package com.pblabs.engine.core
     import com.pblabs.engine.time.IProcessManager;
     import com.pblabs.engine.time.ProcessManager;
     import com.pblabs.engine.util.version.VersionDetails;
-    import com.pblabs.rendering.IScene;
-    import com.pblabs.rendering.ISpatialManager;
+    import com.pblabs.rendering2D.DisplayObjectScene;
+    import com.pblabs.rendering2D.ISpatialManager2D;
     import com.pblabs.screens.ScreenManager;
     import com.pblabs.sound.ISoundManager;
     
@@ -84,20 +83,6 @@ package com.pblabs.engine.core
                         forceReload:Boolean = false):Resource;
         
         function findChild(childName:String):DisplayObject;
-        
-        function get processManager():IProcessManager;
-        function get nameManager():NameManager;
-        function get objectTypeManager():ObjectTypeManager;
-		function get templateManager():TemplateManager;
-		function get levelManager():LevelManager;
-        function get inputManager():InputManager;
-        function get soundManager():ISoundManager;
-        function get resourceManager():ResourceManager;
-        function get screenManager():ScreenManager;
-        function get spatialManager():ISpatialManager;
-		function get prefsManager():IPrefsManager;
-        function get scene():IScene;
-		function get serializer():Serializer;
         
         function isKeyDown(key:InputKey):Boolean;
         function wasKeyPressed(key:InputKey):Boolean;

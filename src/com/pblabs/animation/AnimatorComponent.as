@@ -8,14 +8,15 @@
  ******************************************************************************/
 package com.pblabs.animation
 {
-    import com.pblabs.engine.components.AnimatedComponent;
-    import com.pblabs.engine.entity.PropertyReference;
+    import com.pblabs.engine.core.PropertyReference;
+    import com.pblabs.engine.time.AnimatedComponent;
+    
     import flash.utils.Dictionary;
 	
     /**
      * Component for animating any value on its owner.
      */
-    public class AnimatorComponent extends AnimatedComponent
+    public class AnimatorComponent extends com.pblabs.engine.time.AnimatedComponent
     {
         /**
          * A list of all the animation that can be played by this component.

@@ -13,6 +13,7 @@ package com.pblabs.screens
     import com.pblabs.engine.debug.Logger;
     import com.pblabs.engine.time.IAnimatedObject;
     import com.pblabs.engine.time.ITickedObject;
+    import com.pblabs.engine.time.ProcessManager;
     
     import flash.display.Bitmap;
     import flash.display.BitmapData;
@@ -77,8 +78,8 @@ package com.pblabs.screens
          */
         public function startup():void
         {
-            context.processManager.addTickedObject(this);
-            context.processManager.addAnimatedObject(this);
+            context.getManager(ProcessManager).addTickedObject(this);
+            context.getManager(ProcessManager).addAnimatedObject(this);
             
             // See if we can safely add Sprites to the mainClass, 
             // if so it is our screenParent, else, use stage.

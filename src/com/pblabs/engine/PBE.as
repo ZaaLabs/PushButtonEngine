@@ -27,11 +27,6 @@ package com.pblabs.engine
 			return defaultContext.mainClass;
 		}
 
-		public static function get resourceManager():ResourceManager
-		{
-			return defaultContext.resourceManager;
-		}
-
 		public static function registerType(type:Class):void
 		{
 			// Nop, forces a reference.

@@ -9,6 +9,7 @@
 package com.pblabs.engine.resource
 {
     import com.pblabs.engine.PBE;
+    import com.pblabs.engine.core.IPBContext;
     import com.pblabs.engine.debug.Logger;
     import com.pblabs.engine.resource.provider.EmbeddedResourceProvider;
     
@@ -56,8 +57,13 @@ package com.pblabs.engine.resource
          */
         public function ResourceBundle()
         {
+        }
+        
+        public function register(context:IPBContext):void
+        {
             // Make sure PBE is initialized - no resource manager, no love.
-            if(!PBE.resourceManager)
+            var resourceManager:ResourceManager = context.getManager(ResourceManager);
+            if(!resourceManager)
             {
                 throw new Error("Cannot instantiate a ResourceBundle until you have called context.startup(this);. Move the call to new YourResourceBundle(); to occur AFTER the call to context.startup().");
             }

@@ -34,7 +34,7 @@ package
             restartButton.addEventListener(MouseEvent.CLICK, function(e:*):void
             {
                 RollyBallGame.restartGame();
-                ScreenManager.instance.goto("game");
+                screenManager.goto("game");
             });
         }
     }

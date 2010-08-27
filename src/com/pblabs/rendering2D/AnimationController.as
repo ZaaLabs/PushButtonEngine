@@ -13,7 +13,7 @@ package com.pblabs.rendering2D
     import com.pblabs.engine.core.ProcessManager;
     import com.pblabs.engine.debug.Logger;
     import com.pblabs.engine.debug.Profiler;
-    import com.pblabs.engine.entity.PropertyReference;
+    import com.pblabs.engine.core.PropertyReference;
     import com.pblabs.rendering2D.spritesheet.SpriteContainerComponent;
     
     import flash.events.Event;
@@ -139,7 +139,7 @@ package com.pblabs.rendering2D
 
             // Expire current animation if it has finished playing and it's what we
             // want to keep playing.
-            if (_currentAnimation !== nextAnim && PBE.processManager.virtualTime > (_currentAnimationStartTime + _currentAnimationDuration))
+            if (_currentAnimation !== nextAnim && processManager.virtualTime > (_currentAnimationStartTime + _currentAnimationDuration))
                 _currentAnimation = null;
 
             // If we do not have a current animation, start playing the next.
@@ -172,7 +172,7 @@ package com.pblabs.rendering2D
                 if (frameTime > _currentAnimation.maxFrameDelay)
                     frameTime = _currentAnimation.maxFrameDelay;
     
-                var animationAge:Number = PBE.processManager.virtualTime - _currentAnimationStartTime;
+                var animationAge:Number = processManager.virtualTime - _currentAnimationStartTime;
                 var curFrame:int = Math.floor(animationAge / frameTime);
     
                 // Deal with clamping/looping.
@@ -228,10 +228,10 @@ package com.pblabs.rendering2D
             if (currentAnimationStartTimeReference)
                 _currentAnimationStartTime = owner.getProperty(currentAnimationStartTimeReference);
             else
-                _currentAnimationStartTime = PBE.processManager.virtualTime;
+                _currentAnimationStartTime = processManager.virtualTime;
 
             updateAnimationDuration();
-            //trace("Age at start was " + (PBE.processManager.virtualTime - _currentAnimationStartTime));
+            //trace("Age at start was " + (processManager.virtualTime - _currentAnimationStartTime));
 
             //Logger.(this, "Changed animation to: " + _currentAnimation.spriteSheet.name + ". duration is " + _currentAnimationDuration);
 

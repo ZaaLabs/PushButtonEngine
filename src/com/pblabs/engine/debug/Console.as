@@ -11,15 +11,15 @@ package com.pblabs.engine.debug
     import com.pblabs.engine.PBE;
     import com.pblabs.engine.PBUtil;
     import com.pblabs.engine.core.IPBObject;    import com.pblabs.engine.core.IPBContext;
-    import com.pblabs.engine.core.InputKey;
+    import com.pblabs.engine.input.InputKey;
     import com.pblabs.engine.core.PBGroup;
     import com.pblabs.engine.core.PBObject;
     import com.pblabs.engine.core.PBSet;
-    import com.pblabs.engine.entity.IEntity;
-    import com.pblabs.engine.entity.IEntityComponent;
-    import com.pblabs.engine.entity.PropertyReference;
+    import com.pblabs.engine.core.IEntity;
+    import com.pblabs.engine.core.IEntityComponent;
+    import com.pblabs.engine.core.PropertyReference;
     import com.pblabs.engine.serialization.TypeUtility;
-    import com.pblabs.engine.version.VersionType;
+    import com.pblabs.engine.util.version.VersionType;
     import com.pblabs.engine.pb_internal;
     
     import flash.display.DisplayObject;
@@ -361,7 +361,8 @@ package com.pblabs.engine.debug
                 return;
             }
             
-            var entity:IEntity = currentContext.allocateEntity();
+            var entityName:String = reference.substring(1).split(".")[0];
+            var entity:IEntity = currentContext.lookupEntity(entityName);
             var pr:PropertyReference = new PropertyReference(reference);
             
             var downcase:String = String(value).toLowerCase();
@@ -382,7 +383,8 @@ package com.pblabs.engine.debug
                 return;
             }
             
-            var entity:IEntity = PBE.lookupEntity("console");
+            var entityName:String = reference.substring(1).split(".")[0];
+            var entity:IEntity = currentContext.lookupEntity(entityName);
             var pr:PropertyReference = new PropertyReference(reference);
             
             var x:Number = Number(xIn);
@@ -407,7 +409,8 @@ package com.pblabs.engine.debug
                 return;
             }
             
-            var entity:IEntity = currentContext.allocateEntity();
+            var entityName:String = reference.substring(1).split(".")[0];
+            var entity:IEntity = currentContext.lookupEntity(entityName);
             var pr:PropertyReference = new PropertyReference(reference);
             
             Logger.print(Console, entity.getProperty(pr));

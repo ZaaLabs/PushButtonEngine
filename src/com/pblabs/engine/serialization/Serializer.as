@@ -684,7 +684,7 @@ internal class ResourceNote
     
     public function load(filename:String, type:Class):void
     {
-        var resource:Resource = context.resourceManager.load(filename, type, onLoaded, onFailed);
+        var resource:Resource = context.getManager(ResourceManager).load(filename, type, onLoaded, onFailed);
         
         if(resource)
             owner[fieldName] = resource;
@@ -692,13 +692,13 @@ internal class ResourceNote
     
     public function onLoaded(resource:Resource):void
     {
-        context.serializer.removeResource(resource.filename);
+        context.getManager(Serializer).removeResource(resource.filename);
     }
     
     public function onFailed(resource:Resource):void
     {
         Logger.error(owner, "set " + fieldName, "No resource was found with filename " + resource.filename + ".");
-        context.serializer.removeResource(resource.filename);
+        context.getManager(Serializer).removeResource(resource.filename);
     }
 
 }
@@ -771,7 +771,7 @@ internal class ReferenceNote
         // Or instantiate a new entity.
         if (objectReference != "")
         {
-            owner[fieldName] = context.templateManager.instantiateEntity(objectReference);
+            owner[fieldName] = context.getManager(TemplateManager).instantiateEntity(objectReference);
             reportSuccess();
             return true;
         }

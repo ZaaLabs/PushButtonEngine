@@ -9,17 +9,21 @@
 package com.pblabs.screens
 {
 	import com.pblabs.engine.PBE;
-    import com.pblabs.engine.debug.Logger;
-    import com.pblabs.engine.resource.ImageResource;
-    
-    import flash.display.*;
-    import flash.events.*;
+	import com.pblabs.engine.debug.Logger;
+	import com.pblabs.engine.resource.ImageResource;
+	import com.pblabs.engine.resource.ResourceManager;
+	
+	import flash.display.*;
+	import flash.events.*;
     
     /**
      * Simple screen to display an image. Useful for building other screens.
      */ 
     public class ImageScreen extends BaseScreen
     {
+        [Inject]
+        public var resourceManager:ResourceManager;
+
         /**
          * See class description. 
          * @param image File to display as splash screen.
@@ -27,7 +31,7 @@ package com.pblabs.screens
         public function ImageScreen(image:String)
         {
             // Load the image.
-            PBE.resourceManager.load(image, ImageResource, onImageSucceed, onImageFail);
+            resourceManager.load(image, ImageResource, onImageSucceed, onImageFail);
         }
         
         private function onImageSucceed(i:ImageResource):void

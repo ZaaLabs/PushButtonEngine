@@ -12,7 +12,7 @@ package com.pblabs.animation
 	import com.pblabs.engine.core.IAnimatedObject;
 	import com.pblabs.engine.core.ITickedObject;
 	import com.pblabs.engine.entity.IEntity;
-	import com.pblabs.engine.entity.PropertyReference;
+	import com.pblabs.engine.core.PropertyReference;
 	
 	import flash.geom.Point;
 	import flash.utils.describeType;

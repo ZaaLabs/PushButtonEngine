@@ -37,6 +37,8 @@ package com.pblabs.rendering2D.spritesheet
      */ 
     public class SpriteSheetComponent extends SpriteContainerComponent
     {
+        [Inject]
+        public var resourceManager:ResourceManager;
 						
         /**
          * True if the image data associated with this sprite sheet has been loaded.
@@ -62,11 +64,11 @@ package com.pblabs.rendering2D.spritesheet
         {
             if (_image)
             {
-                PBE.resourceManager.unload(_image.filename, ImageResource);
+                resourceManager.unload(_image.filename, ImageResource);
                 image = null;
             }
             
-            PBE.resourceManager.load(value, ImageResource, onImageLoaded, onImageFailed);
+            resourceManager.load(value, ImageResource, onImageLoaded, onImageFailed);
         }
         
         /**

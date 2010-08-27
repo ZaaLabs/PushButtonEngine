@@ -8,7 +8,7 @@
  ******************************************************************************/
 package com.pblabs.rendering2D.spritesheet
 {
-    import com.pblabs.engine.entity.EntityComponent;
+    import com.pblabs.engine.core.EntityComponent;
     import com.pblabs.rendering2D.modifier.Modifier;
     
     import flash.display.BitmapData;

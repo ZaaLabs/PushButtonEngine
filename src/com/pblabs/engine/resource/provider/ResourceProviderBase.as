@@ -12,38 +12,29 @@ package com.pblabs.engine.resource.provider
     import com.pblabs.engine.debug.Logger;
     import com.pblabs.engine.resource.Resource;
     import com.pblabs.engine.resource.ResourceManager;
-
+    
     import flash.utils.Dictionary;
     
     /**
-     * The ResourceProviderBase class can be extended to create a ResourceProvider 
-     * that will auto register with the ResourceManager
+     * The ResourceProviderBase class provides useful functionality for implementing
+     * resource providers for the ResourceManager.
+     * 
+     * Register a ResourceProvider by doing resourceManager.registerResourceProvider(new MyProvider());
      */
     public class ResourceProviderBase implements IResourceProvider
     {
-        public function ResourceProviderBase(registerProvider:Boolean = true)
-        {
-            // Make sure PBE is initialized - no resource manager, no love.
-            if(!PBE.resourceManager)
-            {
-                throw new Error("Cannot instantiate a ResourceBundle until you have called context.startup(this);. Move the call to new YourResourceBundle(); to occur AFTER the call to context.startup().");
-            }
-            
-            // register this ResourceProvider with the ResourceManager
-            if (registerProvider)
-                PBE.resourceManager.registerResourceProvider(this);
-            
-            // create the Dictionary object that will keep all resources             
-            resources = new Dictionary();
-        }
-        
+        /**
+         * Storage of resources known by this provider.
+         */
+        protected var resources:Dictionary = new Dictionary();
+
         /**
          * This method will check if this provider has access to a specific Resource
          */
         public function isResourceKnown(uri:String, type:Class):Boolean
         {
             var resourceIdentifier:String = uri.toLowerCase() + type;
-            return (resources[resourceIdentifier]!=null)
+            return (resources[resourceIdentifier] != null);
         }
         
         /**
@@ -56,7 +47,7 @@ package com.pblabs.engine.resource.provider
         }
         
         /**
-         * This method will add a resource to the resources Dictionary
+         * This method will add a resource to the resource's Dictionary
          */
         protected function addResource(uri:String, type:Class, resource:Resource):void
         {
@@ -73,11 +64,5 @@ package com.pblabs.engine.resource.provider
         {
             Logger.warn(this, "cancel", "No cancel support in this resource provider.");
         }
-
-        // ------------------------------------------------------------
-        // private and protected variables
-        // ------------------------------------------------------------
-        protected var resources:Dictionary;
-        
     }
 }

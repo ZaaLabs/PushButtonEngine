@@ -38,8 +38,8 @@ package com.pblabs.animation
 				entity.addComponent(_instance,"controller");
 				// register this class with the processmanager
 				// for onTick and onFrame callbacks
-				PBE.processManager.addAnimatedObject(_instance);
-				PBE.processManager.addTickedObject(_instance);
+				processManager.addAnimatedObject(_instance);
+				processManager.addTickedObject(_instance);
 			}
 			return _instance;
 		}

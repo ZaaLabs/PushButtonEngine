@@ -10,10 +10,10 @@ package com.pblabs.rendering2D
 {
     import com.pblabs.engine.PBE;
     import com.pblabs.engine.PBUtil;
-    import com.pblabs.engine.components.AnimatedComponent;
     import com.pblabs.engine.core.ObjectType;
+    import com.pblabs.engine.core.PropertyReference;
     import com.pblabs.engine.debug.Logger;
-    import com.pblabs.engine.entity.PropertyReference;
+    import com.pblabs.engine.time.AnimatedComponent;
     
     import flash.display.BlendMode;
     import flash.display.DisplayObject;
@@ -131,11 +131,6 @@ package com.pblabs.rendering2D
         
         protected var _inScene:Boolean = false;
         
-		public function DisplayObjectRenderer()
-		{
-			_scene = PBE.scene;	// Default scene to PBE.scene
-		}
-		
         public function get layerIndex():int
         {
             return _layerIndex;
@@ -492,6 +487,7 @@ package com.pblabs.rendering2D
         {
             return _scene;
         }
+        
         /**
          * The scene which is responsible for drawing this renderer. Note that
          * you can use the renderer outside of a scene, to control some
@@ -605,6 +601,10 @@ package com.pblabs.rendering2D
         override protected function onAdd() : void
         {
             super.onAdd();
+
+            // Try to be smart about default scene.
+            if(!_scene)
+                _scene = context.getManager(DisplayObjectScene);
             
             if(_displayObject)
                 _displayObject.name = owner.name + "." + name;

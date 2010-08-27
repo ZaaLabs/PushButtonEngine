@@ -8,7 +8,7 @@
  ******************************************************************************/
 package com.pblabs.rendering2D
 {
-    import com.pblabs.engine.entity.PropertyReference;
+    import com.pblabs.engine.core.PropertyReference;
     import com.pblabs.rendering2D.modifier.Modifier;
     import com.pblabs.rendering2D.spritesheet.SpriteContainerComponent;
     

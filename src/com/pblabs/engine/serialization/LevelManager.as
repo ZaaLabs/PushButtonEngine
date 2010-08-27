@@ -47,6 +47,12 @@ package com.pblabs.engine.serialization
 		[Inject]
 		public var serializer:Serializer;
 		
+        [Inject]
+        public var resourceManager:ResourceManager;
+        
+        [Inject]
+        public var templateManager:TemplateManager;
+
 		/**
 		 * The level that is currently loaded.
 		 */
@@ -144,8 +150,8 @@ package com.pblabs.engine.serialization
 				return;
 			}
 			
-			context.templateManager.addEventListener(TemplateManager.LOADED_EVENT, onFileLoaded);
-			context.templateManager.addEventListener(TemplateManager.FAILED_EVENT, onFileLoadFailed);
+			templateManager.addEventListener(TemplateManager.LOADED_EVENT, onFileLoaded);
+			templateManager.addEventListener(TemplateManager.FAILED_EVENT, onFileLoadFailed);
 			
 			_isReady = true;
 			dispatchEvent(new LevelEvent(LevelEvent.READY_EVENT, -1));
@@ -170,7 +176,7 @@ package com.pblabs.engine.serialization
 			}
 			
 			_initialLevel = initialLevel;
-			context.resourceManager.load(filename, XMLResource, onLevelDescriptionsLoaded, onLevelDescriptionsLoadFailed);
+			resourceManager.load(filename, XMLResource, onLevelDescriptionsLoaded, onLevelDescriptionsLoadFailed);
 		}
 		
 		private function onLevelDescriptionsLoaded(resource:XMLResource):void
@@ -277,7 +283,7 @@ package com.pblabs.engine.serialization
 				return null;
 			}
 			
-			var entity:IEntity = context.templateManager.instantiateEntity(name);
+			var entity:IEntity = templateManager.instantiateEntity(name);
 			if (!entity)
 			{
 				Logger.error(this, "loadEntity", "Failed to instantiate an entity with name " + name + ".");
@@ -337,7 +343,7 @@ package com.pblabs.engine.serialization
 				if (_loadFileCallback != null)
 					_loadFileCallback(filename, finishLoad)
 				else
-					context.templateManager.loadFile(filename, force);
+					templateManager.loadFile(filename, force);
 			}
 			
 			finishLoad();
@@ -369,7 +375,7 @@ package com.pblabs.engine.serialization
 					continue;
 				}
 				
-				var group:PBGroup = context.templateManager.instantiateGroup(groupName);
+				var group:PBGroup = templateManager.instantiateGroup(groupName);
 				if (!group)
 				{
 					Logger.error(this, "LoadLevel", "Failed to instantiate the group " + groupName + ".");
@@ -458,7 +464,7 @@ package com.pblabs.engine.serialization
 					continue;
 				}
 				
-				context.templateManager.unloadFile(filename);
+				templateManager.unloadFile(filename);
 				_loadedFiles[filename] = null;
 				delete _loadedFiles[filename];
 			}

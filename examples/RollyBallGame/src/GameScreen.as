@@ -2,9 +2,12 @@ package
 {
     import com.pblabs.engine.PBE;
     import com.pblabs.engine.core.*;
+    import com.pblabs.engine.serialization.LevelManager;
+    import com.pblabs.engine.time.ProcessManager;
     import com.pblabs.rendering2D.ui.PBLabel;
     import com.pblabs.rendering2D.ui.SceneView;
     import com.pblabs.screens.*;
+    
     import flash.geom.*;
     import flash.text.*;
     
@@ -17,6 +20,12 @@ package
         public var sceneView:SceneView = new SceneView();
         public var lblTime:PBLabel = new PBLabel();
         public var lblScore:PBLabel = new PBLabel();
+        
+        [Inject]
+        public var processManager:ProcessManager;
+        
+        [Inject]
+        public var levelManager:LevelManager;
         
         public function GameScreen()
         {
@@ -44,7 +53,7 @@ package
         
         public override function onShow() : void
         {
-            LevelManager.instance.start(1);
+            levelManager.start(1);
         }
         
         /**
@@ -55,7 +64,7 @@ package
          */
         public override function onFrame(delta:Number) : void
         {
-            RollyBallGame.currentTime = RollyBallGame.levelDuration - (PBE.processManager.virtualTime - RollyBallGame.startTimer);
+            RollyBallGame.currentTime = RollyBallGame.levelDuration - (processManager.virtualTime - RollyBallGame.startTimer);
 
             // Update time.
             if(RollyBallGame.currentTime >= 0)
@@ -76,10 +85,10 @@ package
         public override function onTick(delta:Number) : void
         {
             // Deal with timing logic.
-            if(RollyBallGame.currentTime <= 0 && PBE.processManager.isTicking)
+            if(RollyBallGame.currentTime <= 0 && processManager.isTicking)
             {
                 // Stop playing!
-                PBE.processManager.stop();
+                processManager.stop();
                 
                 // Kick off the scoreboard.
                 var sb:Scoreboard = new Scoreboard();

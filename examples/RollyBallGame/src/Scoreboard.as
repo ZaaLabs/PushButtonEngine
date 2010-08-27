@@ -17,6 +17,9 @@ package
     
     public class Scoreboard extends Sprite
     {
+        [Inject]
+        public var soundManager:SoundManager;
+        
         public var lblScore:PBLabel = new PBLabel();
         public var btnContinue:PBButton = new PBButton();
         public var btnRetry:PBButton = new PBButton();
@@ -67,7 +70,7 @@ package
                 return;
             
             // Play a pleasing chunk noise when score goes up.
-            PBE.soundManager.play("../assets/Sounds/scorechunk.mp3");
+            soundManager.play("../assets/Sounds/scorechunk.mp3");
             
             // Update our state.
             CoinsLeft--;

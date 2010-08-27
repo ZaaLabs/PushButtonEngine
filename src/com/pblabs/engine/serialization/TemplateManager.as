@@ -51,6 +51,12 @@ package com.pblabs.engine.serialization
         [Inject]
         public var levelManager:LevelManager;
         
+        [Inject]
+        public var serializer:Serializer;
+        
+        [Inject]
+        public var resourceManager:ResourceManager;
+
         /**
          * Defines the event to dispatch when a level file is successfully loaded.
          */
@@ -86,7 +92,7 @@ package com.pblabs.engine.serialization
          */
         public function loadFile(filename:String, forceReload:Boolean = false):void
         {
-            context.resourceManager.load(filename, XMLResource, onLoaded, onFailed, forceReload);
+            resourceManager.load(filename, XMLResource, onLoaded, onFailed, forceReload);
         }
         
         /**
@@ -98,7 +104,7 @@ package com.pblabs.engine.serialization
         public function unloadFile(filename:String):void
         {
             removeXML(filename);
-            context.resourceManager.unload(filename, XMLResource);
+            resourceManager.unload(filename, XMLResource);
         }
         
         /**
@@ -190,14 +196,14 @@ package com.pblabs.engine.serialization
                     return null;
                 }
                 
-                context.serializer.deserialize(entity, xml);
-                context.serializer.clearCurrentEntity();
+                serializer.deserialize(entity, xml);
+                serializer.clearCurrentEntity();
                 
                 // Don't forget to disable deferring.
                 entity.deferring = false;
                 
                 if (!_inGroup)
-                    context.serializer.reportMissingReferences();
+                    serializer.reportMissingReferences();
                 
                 Profiler.exit("instantiateEntityFromXML");
             }
@@ -538,7 +544,7 @@ package com.pblabs.engine.serialization
             
             context.currentGroup = oldGroup;
             
-            context.serializer.reportMissingReferences();
+            serializer.reportMissingReferences();
             
             return actualGroup;
         }

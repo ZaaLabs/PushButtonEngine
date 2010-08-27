@@ -11,6 +11,8 @@ package com.pblabs.rollyGame
     import com.pblabs.engine.PBE;
     import com.pblabs.engine.core.*;
     import com.pblabs.engine.entity.*;
+    import com.pblabs.engine.input.InputKey;
+    import com.pblabs.engine.input.InputManager;
     import com.pblabs.engine.resource.*;
     import com.pblabs.rendering2D.*;
     import com.pblabs.sound.SoundManager;
@@ -40,28 +42,15 @@ package com.pblabs.rollyGame
         // Temporary objects to avoid allocations.
         protected static var tmpPoint:Point = new Point();
         protected static var tmpArray:Array = [];
-
-        public function get Input():InputMap
-        {
-            return _InputMap;
-        }
-        
-        public function set Input(value:InputMap):void
-        {
-            _InputMap = value;
-            
-            if (_InputMap != null)
-            {
-                _InputMap.mapActionToHandler("GoLeft", _OnLeft);
-                _InputMap.mapActionToHandler("GoRight", _OnRight);
-                _InputMap.mapActionToHandler("GoUp", _OnUp);
-                _InputMap.mapActionToHandler("GoDown", _OnDown);
-                _InputMap.mapActionToHandler("Jump", _OnJump);
-            }
-        }
         
         public override function onTick(tickRate:Number):void
         {
+            // Sample input.
+            _OnLeft(context.isKeyDown(InputKey.LEFT) ? 1 : 0);
+            _OnRight(context.isKeyDown(InputKey.RIGHT) ? 1 : 0);
+            _OnUp(context.isKeyDown(InputKey.UP) ? 1 : 0);
+            _OnDown(context.isKeyDown(InputKey.DOWN) ? 1 : 0);
+            
             // Sample the map for our current position.
             var n:Point = tmpPoint;
             if(Map)

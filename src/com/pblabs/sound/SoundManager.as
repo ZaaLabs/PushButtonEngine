@@ -13,6 +13,7 @@ package com.pblabs.sound
     import com.pblabs.engine.debug.Logger;
     import com.pblabs.engine.debug.Profiler;
     import com.pblabs.engine.resource.MP3Resource;
+    import com.pblabs.engine.resource.ResourceManager;
     import com.pblabs.engine.resource.SoundResource;
     import com.pblabs.engine.time.ITickedObject;
     
@@ -32,6 +33,9 @@ package com.pblabs.sound
 		[Inject]
 		public var context:IPBContext;
 		
+        [Inject]
+        public var resourceManager:ResourceManager;
+
         public static const MUSIC_MIXER_CATEGORY:String = "music";
         public static const SFX_MIXER_CATEGORY:String = "sfx";
         
@@ -78,7 +82,7 @@ package com.pblabs.sound
                         resourceType = MP3Resource;
                     
                     // Otherwise queue the resource and play it when it is loaded.
-                    context.resourceManager.load(sound, resourceType, function(r:*):void
+                    resourceManager.load(sound, resourceType, function(r:*):void
                     {
                         cachedSounds[sound] = r;
                         play(r as SoundResource, category, pan, loopCount, startDelay);

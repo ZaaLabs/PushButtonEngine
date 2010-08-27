@@ -153,7 +153,7 @@ package com.pblabs.engine.core
          */
         public function deserialize(xml:XML, _context:IPBContext):*
         {
-			manager = _context.objectTypeManager;
+			manager = _context.getManager(ObjectTypeManager);
 			
             if (xml.hasSimpleContent())
             {

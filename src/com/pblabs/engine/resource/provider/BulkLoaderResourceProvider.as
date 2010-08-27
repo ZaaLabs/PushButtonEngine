@@ -45,7 +45,6 @@ package com.pblabs.engine.resource.provider
          */
         public function BulkLoaderResourceProvider(name:String, numConnections:int = 12, registerAsProvider:Boolean=true)
         {
-            super(registerAsProvider);                                     
             // create this provider's bulk loader object
             loader = new BulkLoader(name, numConnections);
         }

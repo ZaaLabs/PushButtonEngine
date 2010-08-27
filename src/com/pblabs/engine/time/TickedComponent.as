@@ -17,6 +17,9 @@ package com.pblabs.engine.time
      */
     public class TickedComponent extends EntityComponent implements ITickedObject
     {
+        [Inject]
+        public var processManager:ProcessManager;
+        
         /**
          * The update priority for this component. Higher numbered priorities have
          * onInterpolateTick and onTick called before lower priorities.
@@ -37,13 +40,13 @@ package com.pblabs.engine.time
             {
                 // Need to register.
                 _isRegisteredForUpdates = true;
-                context.processManager.addTickedObject(this, updatePriority);                
+                processManager.addTickedObject(this, updatePriority);
             }
             else if(!_registerForUpdates && _isRegisteredForUpdates)
             {
                 // Need to unregister.
                 _isRegisteredForUpdates = false;
-                context.processManager.removeTickedObject(this);
+                processManager.removeTickedObject(this);
             }
         }
         

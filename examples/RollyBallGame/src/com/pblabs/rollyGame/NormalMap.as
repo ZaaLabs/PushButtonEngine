@@ -7,7 +7,7 @@
  ******************************************************************************/
 package com.pblabs.rollyGame
 {
-    import com.pblabs.engine.entity.*;
+    import com.pblabs.engine.core.*;
     import com.pblabs.rendering2D.*;
     import com.pblabs.rendering2D.spritesheet.SpriteContainerComponent;
     

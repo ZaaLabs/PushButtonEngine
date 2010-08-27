@@ -24,6 +24,9 @@ package com.pblabs.engine.time
         [EditorData(ignore="true")]
         public var updatePriority:Number = 0.0;
         
+        [Inject]
+        public var processManager:ProcessManager;
+        
         private var _registerForUpdates:Boolean = true;
         private var _isRegisteredForUpdates:Boolean = false;
         
@@ -39,13 +42,13 @@ package com.pblabs.engine.time
             {
                 // Need to register.
                 _isRegisteredForUpdates = true;
-				context.processManager.addAnimatedObject(this, updatePriority);
+				processManager.addAnimatedObject(this, updatePriority);
             }
             else if(!_registerForUpdates && _isRegisteredForUpdates)
             {
                 // Need to unregister.
                 _isRegisteredForUpdates = false;
-				context.processManager.removeAnimatedObject(this);
+				processManager.removeAnimatedObject(this);
             }
         }
         
