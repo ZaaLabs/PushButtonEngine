@@ -10,7 +10,6 @@ package com.pblabs.rollyGame
     import com.pblabs.animation.*;
     import com.pblabs.engine.PBE;
     import com.pblabs.engine.core.*;
-    import com.pblabs.engine.entity.*;
     import com.pblabs.engine.input.InputKey;
     import com.pblabs.engine.input.InputManager;
     import com.pblabs.engine.resource.*;
@@ -25,6 +24,9 @@ package com.pblabs.rollyGame
      */
     public class BallMover extends SimpleSpatialComponent
     {
+        [Inject]
+        public var soundManager:SoundManager;
+        
         public var Map:NormalMap;
         public var Height:Number = 1.0;
         public var Radius:Number = 16;
@@ -98,10 +100,10 @@ package com.pblabs.rollyGame
                 // Grant score.
                 RollyBallGame.currentScore++;
                 if(PickupSound)
-                    PBE.soundManager.play(PickupSound);
+                    soundManager.play(PickupSound);
                 
                 // Spawn a new coin somewhere.
-                PBE.makeEntity("Coin", 
+                context.makeEntity("Coin", 
                     {
                         "@Spatial.position": new Point(20 + Math.random() * 600, 20 + Math.random() * 400) 
                     });
@@ -147,7 +149,6 @@ package com.pblabs.rollyGame
             _Jump = value;
         }
         
-        private var _InputMap:InputMap;
         private var _Left:Number = 0;
         private var _Right:Number = 0;
         private var _Up:Number = 0;

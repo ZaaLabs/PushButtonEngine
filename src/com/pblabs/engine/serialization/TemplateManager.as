@@ -489,7 +489,7 @@ package com.pblabs.engine.serialization
                 throw new Error("Could not find group '" + name + "'");
             
             //Create the group:
-            var actualGroup:PBGroup = context.allocateGroup();
+            var actualGroup:PBGroup = context.allocate(PBGroup);
             if(name != context.rootGroup.name)
             {
                 actualGroup.initialize(name);

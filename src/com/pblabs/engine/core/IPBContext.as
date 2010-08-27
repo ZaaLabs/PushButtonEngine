@@ -22,7 +22,7 @@ package com.pblabs.engine.core
     public interface IPBContext
     {
         // Core.
-        function startup(mainInstance:DisplayObject, name:String = null):void;
+        function startup():void;
         function shutdown():void;
         
 		function get name():String;
@@ -36,16 +36,12 @@ package com.pblabs.engine.core
         function get currentGroup():PBGroup;
         function set currentGroup(value:PBGroup):void;
 
-		function inject(instance:*):void;
-		function allocate(type:Class):*;
-		
-		function allocateComponent(type:Class):*;
-        function allocateGroup():PBGroup;
-        function allocateSet():PBSet;
+        function allocate(type:Class):*;
         function allocateEntity():IEntity;
-        
+		function inject(instance:*):void;
+		
         function get mainClass():*;
-
+        
 		function get flashVars():Object;
         function get hostingDomain():String;
 		function get versionDetails():VersionDetails;

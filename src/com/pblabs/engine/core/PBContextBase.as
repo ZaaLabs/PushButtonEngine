@@ -26,6 +26,8 @@ package com.pblabs.engine.core
    import flash.events.EventDispatcher;
    import flash.events.IEventDispatcher;
    import flash.utils.Dictionary;
+   
+   import org.swiftsuspenders.Injector;
 
    use namespace pb_internal;
 
@@ -61,7 +63,7 @@ package com.pblabs.engine.core
       {
          return _name;
       }
-
+      
       public function startup(mainInstance:DisplayObject, name:String = null):void
       {
          if (!name)
@@ -136,24 +138,9 @@ package com.pblabs.engine.core
          return res;
       }
 
-      public function allocateComponent(type:Class):*
-      {
-         return allocate(type);
-      }
-
       public function allocateEntity():IEntity
       {
          return allocate(Entity);
-      }
-
-      public function allocateSet():PBSet
-      {
-         return allocate(PBSet);
-      }
-
-      public function allocateGroup():PBGroup
-      {
-         return allocate(PBGroup);
       }
 
       public function get rootGroup():PBGroup

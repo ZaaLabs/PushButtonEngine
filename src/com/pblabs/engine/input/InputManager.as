@@ -12,6 +12,7 @@ package com.pblabs.engine.input
     import com.pblabs.engine.core.IPBContext;
     import com.pblabs.engine.core.IPBManager;
     import com.pblabs.engine.time.ITickedObject;
+    import com.pblabs.engine.time.ProcessManager;
     
     import flash.events.EventDispatcher;
     import flash.events.KeyboardEvent;
@@ -33,6 +34,9 @@ package com.pblabs.engine.input
     {
 		[Inject]
 		public var context:IPBContext;
+        
+        [Inject]
+        public var processManager:ProcessManager;
 		
         public function startup():void
         {
@@ -47,12 +51,13 @@ package com.pblabs.engine.input
             
             // Add ourselves with the highest priority, so that our update happens at the beginning of the next tick.
             // This will keep objects processing afterwards as up-to-date as possible when using keyJustPressed() or keyJustReleased()
-			context.processManager.addTickedObject( this, Number.MAX_VALUE );
+			processManager.addTickedObject( this, Number.MAX_VALUE );
         }
 		
 		public function shutdown():void
 		{
 			// TODO: Unregister events.
+            processManager.removeTickedObject( this );
 		}
         
         /**

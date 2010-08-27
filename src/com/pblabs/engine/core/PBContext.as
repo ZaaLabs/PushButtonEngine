@@ -46,7 +46,12 @@ package com.pblabs.engine.core
 				m.startup();
 		}
 		
-		public override function inject(instance:*):void
+        public function setInjectorParent(i:Injector)
+        {
+            injector.setParentInjector(i);
+        }
+
+        public override function inject(instance:*):void
 		{
 			injector.injectInto(instance);			
 		}
@@ -63,7 +68,7 @@ package com.pblabs.engine.core
 			
 			return res;
 		}
-				
+        
         protected override function initializeManagers():void
         {
 			var pm:ProcessManager = new ProcessManager();

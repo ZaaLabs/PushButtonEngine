@@ -12,6 +12,7 @@ package
     import com.pblabs.engine.core.*;
     import com.pblabs.engine.debug.Logger;
     import com.pblabs.engine.resource.ResourceManager;
+    import com.pblabs.engine.time.ProcessManager;
     import com.pblabs.rendering2D.*;
     import com.pblabs.rendering2D.spritesheet.*;
     import com.pblabs.rendering2D.ui.*;
@@ -24,30 +25,41 @@ package
     [SWF(width="640", height="480", frameRate="60", backgroundColor="0x000000")]
     public class RollyBallGame extends Sprite
     {
+        public static var game:PBGame = new PBGame();
+        
+        [Inject]
+        public var resourceManager:ResourceManager;
+        
+        [Inject]
+        public var processManager:ProcessManager;
+        
         public function RollyBallGame()
         {
-            // Enable this to ensure all resources are embedded.
-            //PBE.resourceManager.onEmbeddedFail = trace;
-            //PBE.resourceManager.onlyLoadEmbeddedResources = true;
+            // Make the game scale properly.
+            stage.scaleMode = StageScaleMode.SHOW_ALL; 
+
+            
+            // Start the game!
+            game.startup(this);
+            game.addResourceBundle(new GameResources());
             
             // Register our types.
-            PBE.registerType(com.pblabs.rendering2D.DisplayObjectScene);
-            PBE.registerType(com.pblabs.rendering2D.SpriteSheetRenderer);
-            PBE.registerType(com.pblabs.rendering2D.SimpleSpatialComponent);
-            PBE.registerType(com.pblabs.rendering2D.BasicSpatialManager2D);
-            PBE.registerType(com.pblabs.rendering2D.spritesheet.CellCountDivider);
-            PBE.registerType(com.pblabs.rendering2D.spritesheet.SpriteSheetComponent);
-            PBE.registerType(com.pblabs.rendering2D.ui.SceneView);
-            PBE.registerType(com.pblabs.animation.AnimatorComponent);
-            PBE.registerType(com.pblabs.rollyGame.NormalMap);
-            PBE.registerType(com.pblabs.rollyGame.BallMover);
-            PBE.registerType(com.pblabs.rollyGame.BallShadowRenderer);
-            PBE.registerType(com.pblabs.rollyGame.BallSpriteRenderer);            
-            
-            // Initialize game.
-            PBE.startup(this);
-            
-            PBE.addResources(new GameResources());
+            game.registerType(com.pblabs.rendering2D.DisplayObjectScene);
+            game.registerType(com.pblabs.rendering2D.SpriteSheetRenderer);
+            game.registerType(com.pblabs.rendering2D.SimpleSpatialComponent);
+            game.registerType(com.pblabs.rendering2D.BasicSpatialManager2D);
+            game.registerType(com.pblabs.rendering2D.spritesheet.CellCountDivider);
+            game.registerType(com.pblabs.rendering2D.spritesheet.SpriteSheetComponent);
+            game.registerType(com.pblabs.rendering2D.ui.SceneView);
+            game.registerType(com.pblabs.animation.AnimatorComponent);
+            game.registerType(com.pblabs.rollyGame.NormalMap);
+            game.registerType(com.pblabs.rollyGame.BallMover);
+            game.registerType(com.pblabs.rollyGame.BallShadowRenderer);
+            game.registerType(com.pblabs.rollyGame.BallSpriteRenderer);   
+
+            // Enable this to ensure all resources are embedded.
+            resourceManager.onEmbeddedFail = trace;
+            resourceManager.onlyLoadEmbeddedResources = true;
             
             // Initialize level.
             LevelManager.instance.addFileReference(0, "../assets/Levels/level.pbelevel");
@@ -61,8 +73,6 @@ package
             LevelManager.instance.addGroupReference(2, "Everything");
             LevelManager.instance.addGroupReference(2, "Level2");
             
-            // Make the game scale properly.
-            stage.scaleMode = StageScaleMode.SHOW_ALL; 
             
             // Pause/resume based on focus.
             stage.addEventListener(Event.DEACTIVATE, function():void{ processManager.timeScale = 0; });

@@ -59,15 +59,8 @@ package com.pblabs.engine.resource
         {
         }
         
-        public function register(context:IPBContext):void
+        public function register(resourceManager:ResourceManager):void
         {
-            // Make sure PBE is initialized - no resource manager, no love.
-            var resourceManager:ResourceManager = context.getManager(ResourceManager);
-            if(!resourceManager)
-            {
-                throw new Error("Cannot instantiate a ResourceBundle until you have called context.startup(this);. Move the call to new YourResourceBundle(); to occur AFTER the call to context.startup().");
-            }
-            
             // Get information about our members (which will be embedded resources)
             var desc:XML = describeType(this);
             var res:Class;
