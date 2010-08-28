@@ -107,7 +107,7 @@ package com.pblabs.engine.core
             for each (var component:IEntityComponent in _components)
             {        	
                 var componentXML:XML = <component type={getQualifiedClassName(component).replace(/::/,".")} name={component.name} />;
-                context.serializer.serialize(component, componentXML);
+                context.getManager(Serializer).serialize(component, componentXML);
                 entityXML.appendChild(componentXML);
             }
 
@@ -117,7 +117,7 @@ package com.pblabs.engine.core
         public function deserialize(xml:XML, registerComponents:Boolean = true):void
         {
             // Note what entity we're deserializing to the Serializer.
-			context.serializer.setCurrentEntity(this);
+			context.getManager(Serializer).setCurrentEntity(this);
 
             // Push the deferred state.
             var oldDefer:Boolean = deferring;
@@ -147,7 +147,7 @@ package com.pblabs.engine.core
 						continue;
 					}
 					
-                    component = context.allocateComponent(type) as IEntityComponent;
+                    component = context.allocate(type) as IEntityComponent;
                     if (!component)
                     {
                         Logger.error(this, "deserialize", "Unable to instantiate component " + componentName + " of type " + componentClassName + " on entity '" + name + "'.");
@@ -169,7 +169,7 @@ package com.pblabs.engine.core
                 }
                 
                 // Deserialize the XML into the component.
-				context.serializer.deserialize(component, componentXML);
+				context.getManager(Serializer).deserialize(component, componentXML);
             }
             
             // Deal with set membership.
@@ -188,7 +188,7 @@ package com.pblabs.engine.core
                         if (!pbset) 
                         {
                             // Set doesn't exist, create a new one.
-                            pbset = context.allocateSet();
+                            pbset = context.allocate(PBSet);
                             pbset.initialize(thisName);
 							
                             Logger.warn(this, "deserialize", "Auto-creating set '" + thisName + "'.");
@@ -461,7 +461,7 @@ package com.pblabs.engine.core
             else if(startChar == "#")
             {
                 // Named object reference. Look up the entity in the NameManager.
-                parentElem = context.nameManager.lookup(curLookup);
+                parentElem = context.getManager(NameManager).lookup(curLookup);
                 if(!parentElem)
                 {
                     Logger.warn(this, "findProperty", "Could not resolve named object named '" + curLookup + "' for property '" + reference.property + "'");
@@ -485,7 +485,7 @@ package com.pblabs.engine.core
             {
                 // XML reference. Look it up inside the TemplateManager. We only support
                 // templates and entities - no groups.
-                parentElem = context.templateManager.getXML(curLookup, "template", "entity");
+                parentElem = context.getManager(TemplateManager).getXML(curLookup, "template", "entity");
                 if(!parentElem)
                 {
                     Logger.warn(this, "findProperty", "Could not find XML named '" + curLookup + "' for property '" + reference.property + "'");

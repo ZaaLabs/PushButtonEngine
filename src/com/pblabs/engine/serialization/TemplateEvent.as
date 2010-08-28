@@ -22,7 +22,7 @@ package com.pblabs.engine.serialization
         /**
          * This event is dispatched by the TemplateManager when a group's entities have been loaded.
          *
-         * @eventType GROUP_LOADED
+         * @eventType groupLoaded
          */
         public static const GROUP_LOADED:String = "groupLoaded";
 

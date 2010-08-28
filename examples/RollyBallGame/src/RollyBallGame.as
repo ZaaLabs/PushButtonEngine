@@ -12,6 +12,7 @@ package
     import com.pblabs.engine.core.*;
     import com.pblabs.engine.debug.Logger;
     import com.pblabs.engine.resource.ResourceManager;
+    import com.pblabs.engine.serialization.LevelContext;
     import com.pblabs.engine.time.ProcessManager;
     import com.pblabs.rendering2D.*;
     import com.pblabs.rendering2D.spritesheet.*;
@@ -61,18 +62,9 @@ package
             resourceManager.onEmbeddedFail = trace;
             resourceManager.onlyLoadEmbeddedResources = true;
             
-            // Initialize level.
-            LevelManager.instance.addFileReference(0, "../assets/Levels/level.pbelevel");
-            LevelManager.instance.addGroupReference(0, "Everything");
-            
-            LevelManager.instance.addFileReference(1, "../assets/Levels/level.pbelevel");
-            LevelManager.instance.addGroupReference(1, "Everything");
-            LevelManager.instance.addGroupReference(1, "Level1");
-            
-            LevelManager.instance.addFileReference(2, "../assets/Levels/level.pbelevel");
-            LevelManager.instance.addGroupReference(2, "Everything");
-            LevelManager.instance.addGroupReference(2, "Level2");
-            
+            // Set up the levels.
+            game.registerContext(new LevelContext("level1", "../assets/Levels/level.pbelevel", "Level1"));
+            game.registerContext(new LevelContext("level2", "../assets/Levels/level.pbelevel", "Level2"));
             
             // Pause/resume based on focus.
             stage.addEventListener(Event.DEACTIVATE, function():void{ processManager.timeScale = 0; });

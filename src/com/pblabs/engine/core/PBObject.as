@@ -8,6 +8,10 @@
  ******************************************************************************/
 package com.pblabs.engine.core
 {
+    import com.pblabs.engine.pb_internal;
+
+    use namespace pb_internal;
+    
     /**
      * Base implementation of a named object that can exist in PBSets or PBGroups.
      * 
@@ -18,9 +22,9 @@ package com.pblabs.engine.core
         protected var _name:String, _alias:String;
         protected var _owningGroup:PBGroup;
         protected var _sets:Array;
-		protected var _context:IPBContextRegistration;
+		protected var _context:PBContextBase;
         
-		internal function setContext(c:IPBContextRegistration):void
+		internal function setContext(c:PBContextBase):void
 		{
 			if(_context)
 				throw new Error("Trying to set context on a PBObject that already has one!");
@@ -80,12 +84,12 @@ package com.pblabs.engine.core
             _name = name;
             _alias = alias;
 
-			(context as IPBContextRegistration).register(this);
+			_context.register(this);
         }
         
         public function destroy():void
         {
-			(context as IPBContextRegistration).unregister(this);
+			_context.unregister(this);
             
             // Remove from any sets.
             while(_sets && _sets.length)

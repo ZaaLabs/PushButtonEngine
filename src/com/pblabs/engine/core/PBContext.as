@@ -68,56 +68,5 @@ package com.pblabs.engine.core
 			
 			return res;
 		}
-        
-        protected override function initializeManagers():void
-        {
-			var pm:ProcessManager = new ProcessManager();
-			registerManager(IProcessManager, pm);
-
-			registerManager(Serializer, new Serializer);
-            registerManager(InputManager, new InputManager());
-            registerManager(NameManager, new NameManager());
-            registerManager(ObjectTypeManager, new ObjectTypeManager());
-            registerManager(LevelManager, new LevelManager());
-            registerManager(ResourceManager, new ResourceManager());
-            registerManager(TemplateManager, new TemplateManager());
-            
-            var sm:SoundManager = new SoundManager();
-            registerManager(ISoundManager, sm);
-            pm.addTickedObject(sm, 100);
-            
-			registerManager(ScreenManager, new ScreenManager());
-        }
-
-        /**
-         * Helper function to set up a basic scene using default rendering         
-		 * classes. Very useful for getting started quickly.
-         */
-        public function initializeScene(view:IUITarget, sceneName:String = "SceneDB", sceneClass:Class = null, spatialManagerClass:Class = null):IEntity
-        {
-            // You will notice this is almost straight out of lesson #2.
-            var theScene:IEntity = allocateEntity();                                // Allocate our Scene entity
-			theScene.initialize(sceneName);                                         // Register with the name "Scene"
-            
-            if(!spatialManagerClass)
-                spatialManagerClass = BasicSpatialManager;
-            
-            var spatial:ISpatialManager = allocateComponent(spatialManagerClass);           // Allocate our Spatial DB component
-			theScene.addComponent( spatial as IEntityComponent, "Spatial" );        // Add to Scene with name "Spatial"
-                        
-            if(!sceneClass)
-                sceneClass = DisplayObjectScene;
-            
-            var sceneComponent:* = allocateComponent(sceneClass);               // Allocate our renderering component
-			sceneComponent.sceneView = view;                 // Point the Renderer's SceneView at the view we just created.
-			sceneComponent.sceneAlignment = SceneAlignment.DEFAULT_ALIGNMENT 			// Set default sceneAlignment
-			theScene.addComponent( sceneComponent, "Scene" );   // Add our Renderer component to the scene entity with the name "Renderer"
-
-            // Register as managers.
-            registerManager( ISpatialManager, spatial );
-            registerManager( IScene, sceneComponent );
-
-            return theScene;
-        }
     }
 }

@@ -14,12 +14,13 @@ package com.pblabs.engine
     
     import flash.display.DisplayObject;
     import flash.display.DisplayObjectContainer;
+    import flash.display.Stage;
     import flash.geom.Matrix;
     import flash.utils.Dictionary;
     import flash.utils.describeType;
     import flash.utils.getDefinitionByName;
     import flash.utils.getQualifiedClassName;
-
+    
     /**
      * Contains math related utility methods.
      */
@@ -75,9 +76,9 @@ package com.pblabs.engine
         public static function cloneArray(array:Array):Array
         {
             var newArray:Array = [];
-
+            
             for each (var item:* in array)
-                newArray.push(item);
+            newArray.push(item);
             
             return newArray;
         }
@@ -107,7 +108,7 @@ package com.pblabs.engine
                 r += 360;
             return r;
         }
-
+        
         /**
          * Return the shortest distance to get from from to to, in radians.
          */
@@ -151,7 +152,7 @@ package com.pblabs.engine
             // Done
             return delta;
         }
-
+        
         /**
          * Get number of bits required to encode values from 0..max.
          *
@@ -161,11 +162,11 @@ package com.pblabs.engine
         public static function getBitCountForRange(max:int):int
         {
             var count:int = 0;
-
+            
             // Unfortunately this is a bug with this method... and requires this special
             // case (same issue with the old method log calculation)
             if (max == 1) return 1;
-
+            
             max--;
             while (max >> count > 0) count++;
             return count;
@@ -244,7 +245,7 @@ package com.pblabs.engine
             if (deepCopy && source[fieldName] is Array)
             {
                 var tmpArray:Object=null;
-            
+                
                 // See if we have a type hint for objects in the array
                 // by looking at the destination field
                 var typeName:String = TypeUtility.getTypeHint(destination,fieldName);
@@ -253,9 +254,9 @@ package com.pblabs.engine
                 {
                     var vectorType:String = "Vector.<"+typeName+">";
                     tmpArray = TypeUtility.instantiate(vectorType);
-                                    
+                    
                     for each (var val:Object in source[fieldName])
-        {
+                    {
                         var obj:Object = null;
                         if (typeName)
                         {
@@ -276,7 +277,7 @@ package com.pblabs.engine
                     tmpArray = source[fieldName];
                 }
                 
-    
+                
                 destination[fieldName] = tmpArray;                    
             }
             else
@@ -312,14 +313,14 @@ package com.pblabs.engine
         public static function escapeHTMLText(str:String):String
         {
             var chars:Array = 
-            [
-                {char:"&", repl:"|amp|"},
-                {char:"<", repl:"&lt;"},
-                {char:">", repl:"&gt;"},
-                {char:"\'", repl:"&apos;"},
-                {char:"\"", repl:"&quot;"},
-                {char:"|amp|", repl:"&amp;"}
-            ];
+                [
+                    {char:"&", repl:"|amp|"},
+                    {char:"<", repl:"&lt;"},
+                    {char:">", repl:"&gt;"},
+                    {char:"\'", repl:"&apos;"},
+                    {char:"\"", repl:"&quot;"},
+                    {char:"|amp|", repl:"&amp;"}
+                ];
             
             for(var i:int=0; i < chars.length; i++)
             {
@@ -423,7 +424,7 @@ package com.pblabs.engine
         public static function getFileExtension(file:String):String
         {
             var extensionIndex:Number = file.lastIndexOf(".");
-           if (extensionIndex == -1) {
+            if (extensionIndex == -1) {
                 //No extension
                 return "";
             } else {
@@ -477,7 +478,7 @@ package com.pblabs.engine
                 if(dumpRecursionSafety[child] == 1)
                     continue;
                 dumpRecursionSafety[child] = 1;
-            
+                
                 output += tabs +"["+ child +"] => "+ obj[child];
                 
                 var childOutput:String = dumpObjectToLogger(thisObject, obj[child], level+1);
@@ -513,7 +514,7 @@ package com.pblabs.engine
             var clone:Object;
             if(!source)
                 return null;
-
+            
             clone = newSibling(source);
             
             if(clone) 
@@ -526,7 +527,7 @@ package com.pblabs.engine
         {
             if(!sourceObj)
                 return null;
-                
+            
             var objSibling:*;
             try 
             {
@@ -564,7 +565,7 @@ package com.pblabs.engine
                         
                         if(!destination.hasOwnProperty(prop.@name)) 
                             continue;
-
+                        
                         destination[prop.@name] = source[prop.@name];
                     }
                 }
@@ -627,7 +628,7 @@ package com.pblabs.engine
                 return func.apply(null, args);
             }
         }
-
+        
         /**
          * Return a function that calls a specified function with the provided arguments
          * APPENDED to its provided arguments.
@@ -647,7 +648,7 @@ package com.pblabs.engine
                 return func.apply(null, argsCopy);
             }
         }
-
+        
         /**
          * Return a sorted list of the keys in a dictionary
          */
@@ -662,20 +663,48 @@ package com.pblabs.engine
             
             return keylist;
         }
-      
-      /**
-       * Return a sorted list of the values in a dictionary
-       */
-      public static function getSortedDictionaryValues(dict:Dictionary):Array
-      {
-         var valuelist:Array = new Array();
-         for each (var value:Object in dict)
-         {
-            valuelist.push(value);
-         }
-         valuelist.sort();
-         
-         return valuelist;
-      }
+        
+        /**
+         * Return a sorted list of the values in a dictionary
+         */
+        public static function getSortedDictionaryValues(dict:Dictionary):Array
+        {
+            var valuelist:Array = new Array();
+            for each (var value:Object in dict)
+            {
+                valuelist.push(value);
+            }
+            valuelist.sort();
+            
+            return valuelist;
+        }
+        
+        protected var _stageQualityStack:Array = [];
+        
+        /**
+         * Set stage quality to a new value, and store the old value so we
+         * can restore it later. Useful if you want to temporarily toggle
+         * render quality.
+         *
+         * @param newQuality From StafeQuality, new quality level to use.
+         */
+        public function pushStageQuality(mainStage:Stage, newQuality:String):void
+        {
+            _stageQualityStack.push(mainStage.quality);
+            mainStage.quality = newQuality;
+        }
+        
+        /**
+         * Restore stage quality to previous value.
+         *
+         * @see pushStageQuality
+         */
+        public function popStageQuality(mainStage:Stage):void
+        {
+            if (_stageQualityStack.length == 0)
+                throw new Error("Bottomed out in stage quality stack! You have mismatched push/pop calls!");
+            
+            mainStage.quality = _stageQualityStack.pop();
+        }
     }
 }
