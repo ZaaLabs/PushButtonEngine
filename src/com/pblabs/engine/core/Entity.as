@@ -605,8 +605,7 @@ package com.pblabs.engine.core
             return null;
         }
         
-        private var _deferring:Boolean = true;
-        
+        protected var _deferring:Boolean = true;
         protected var _components:Dictionary = new Dictionary();
         protected var _tempPropertyInfo:PropertyInfo = new PropertyInfo();
         protected var _deferredComponents:Array = new Array();

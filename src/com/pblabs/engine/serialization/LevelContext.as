@@ -8,14 +8,18 @@ package com.pblabs.engine.serialization
     public class LevelContext extends PBContext
     {
         protected var _levelUrl:String;
+        protected var _group:String = "DefaultGroup";
         
         [Inject]
         public var templateManager:TemplateManager;
         
-        public function LevelContext(name:String, levelUrl:String)
+        public function LevelContext(name:String, levelUrl:String, group:String = null)
         {
             super(name);
             _levelUrl = levelUrl;
+            
+            if(group)
+                _group = group;
         }
 
         protected override function initializeManagers():void
@@ -39,7 +43,7 @@ package com.pblabs.engine.serialization
         protected function onLevelLoaded(e:*):void
         {
             // Instantiate the default group.
-            templateManager.instantiateGroup("DefaultGroup");
+            templateManager.instantiateGroup(_group);
         }
         
         public override function shutdown():void

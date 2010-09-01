@@ -39,7 +39,6 @@ package
             // Make the game scale properly.
             stage.scaleMode = StageScaleMode.SHOW_ALL; 
 
-            
             // Start the game!
             game.startup(this);
             game.addResourceBundle(new GameResources());
@@ -63,89 +62,12 @@ package
             resourceManager.onlyLoadEmbeddedResources = true;
             
             // Set up the levels.
-            game.registerContext(new LevelContext("level1", "../assets/Levels/level.pbelevel", "Level1"));
-            game.registerContext(new LevelContext("level2", "../assets/Levels/level.pbelevel", "Level2"));
+            game.registerContext(new RollyBallGameLevelContext("level1", "../assets/Levels/level.pbelevel", "Level1"));
+            game.registerContext(new RollyBallGameLevelContext("level2", "../assets/Levels/level.pbelevel", "Level2"));
             
             // Pause/resume based on focus.
             stage.addEventListener(Event.DEACTIVATE, function():void{ processManager.timeScale = 0; });
             stage.addEventListener(Event.ACTIVATE, function():void{ processManager.timeScale = 1; });
-            
-            // Set up our screens.
-            ScreenManager.instance.registerScreen("splash", new SplashScreen("../assets/Images/intro.png", "game"));
-            ScreenManager.instance.registerScreen("game", new GameScreen());
-            ScreenManager.instance.registerScreen("gameOver", new GameOverScreen());
-            ScreenManager.instance.goto("splash");
-        }
-        
-        // Global game state.
-        public static var currentScore:int = 0;
-        public static var startTimer:Number = 0;
-        
-        public static var levelDuration:Number = 45000;
-        public static var currentTime:Number = levelDuration;
-        
-        public static function resetTimerAndScore():void
-        {
-            startTimer = processManager.virtualTime;
-            currentScore = 0;
-            currentTime = 0.0;            
-        }
-        
-        public static function resetLevel():void
-        {
-            // Reset the level.
-            var curLevel:int = LevelManager.instance.currentLevel;
-            
-            // Reset the coins.
-            var cs:PBSet = PBE.lookup("CoinSet") as PBSet;
-            if(cs)
-                cs.clear();
-            
-            // Hack to properly reset level data - level 0 is always loaded
-            // and has special logic in the manager, so we have to do this 
-            // hack for now -- BJG
-            LevelManager.instance.loadLevel(curLevel == 1 ? 2 : 1);
-            LevelManager.instance.loadLevel(curLevel);
-            
-            // Reset the timer and score.
-            resetTimerAndScore();
-        }
-        
-        public static function restartGame():void
-        {
-            // Reset the coins.
-            var cs:PBSet = PBE.lookup("CoinSet") as PBSet;
-            if(cs)
-                cs.clear();
-
-            // Reset the level.
-            LevelManager.instance.loadLevel(1);
-
-            // Reset the timer and score.
-            resetTimerAndScore();
-        }
-        
-        public static function nextLevel():void
-        {
-            // Reset the coins.
-            var cs:PBSet = PBE.lookup("CoinSet") as PBSet;
-            if(cs)
-                cs.clear();
-
-            // Advance level as appropriate.
-            if(LevelManager.instance.currentLevel < 2)
-            {
-                LevelManager.instance.loadNextLevel();               
-                
-                // Reset the timer.
-                resetTimerAndScore();
-                
-                ScreenManager.instance.goto("game");
-            }
-            else
-            {
-                ScreenManager.instance.goto("gameOver");
-            }
         }
     }    
 }
