@@ -84,6 +84,8 @@ package com.pblabs.animation
          */
         override protected function onReset():void
         {
+            super.onReset();
+            
             if (!autoPlay || _currentAnimation)
                 return;
 
