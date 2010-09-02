@@ -13,6 +13,8 @@ package com.pblabs.engine.resource
     import flash.display.Bitmap;
     import flash.display.BitmapData;
     import flash.display.DisplayObject;
+    import flash.display.DisplayObjectContainer;
+    import flash.display.Sprite;
     import flash.geom.Matrix;
     import flash.geom.Rectangle;
     
@@ -67,11 +69,15 @@ package com.pblabs.engine.resource
                 var dObj:DisplayObject = data as DisplayObject;
                 
                 // get sprite's targetSpace
-                var targetSpace:DisplayObject;
+                var targetSpace:DisplayObjectContainer;
                 if(dObj.parent)
                     targetSpace = dObj.parent;
                 else
-                    targetSpace = PBE.mainStage;
+                {
+                    // Make a sprite to act as parent.
+                    targetSpace = new Sprite();
+                    targetSpace.addChild(dObj);
+                }
                 
                 // get sprite's rectangle 
                 var spriteRect:Rectangle = dObj.getBounds(targetSpace);

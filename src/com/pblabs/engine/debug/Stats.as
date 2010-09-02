@@ -185,7 +185,8 @@ package com.pblabs.engine.debug
             msText.text = "MS: " + frameTime;
             ms = timer;
             
-            PBE.mainStage.invalidate();
+            if(stage)
+                stage.invalidate();
         }
     }
 }

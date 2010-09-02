@@ -18,6 +18,9 @@ package
     public class Scoreboard extends Sprite
     {
         [Inject]
+        public var gameBus:EventDispatcher;
+        
+        [Inject]
         public var soundManager:SoundManager;
         
         public var lblScore:PBLabel = new PBLabel();
@@ -82,13 +85,13 @@ package
         
         private function _OnRetryClick(e:Event):void
         {
-            RollyBallGame.resetLevel();
+            gameBus.dispatchEvent(new Event(RollyBallGame.RESET_LEVEL_EVENT));
             parent.removeChild(this);
         }
         
         private function _OnNextClick(e:Event):void
         {
-            RollyBallGame.nextLevel();
+            gameBus.dispatchEvent(new Event(RollyBallGame.NEXT_LEVEL_EVENT));
             parent.removeChild(this);
         }
     }

@@ -29,7 +29,7 @@ package com.pblabs.engine.core
 		
         function get started():Boolean;
         
-        function registerManager(clazz:Class, instance:Object, optionalName:String = null):void;
+        function registerManager(clazz:Class, instance:Object = null, optionalName:String = null):void;
         function getManager(clazz:Class, optionalName:String = null):*;
         
         function get rootGroup():PBGroup;
@@ -41,48 +41,19 @@ package com.pblabs.engine.core
 		function inject(instance:*):void;
 		
         function get mainClass():*;
+        function findChild(childName:String):DisplayObject;
         
 		function get flashVars():Object;
         function get hostingDomain():String;
 		function get versionDetails():VersionDetails;
 
 		function get mainStage():Stage;
-        function pushStageQuality(newQuality:String):void;
-        function popStageQuality():void;
 
-		function get eventDispatcher():IEventDispatcher;
+        function get eventDispatcher():IEventDispatcher;
 		
-		/**
-		 * Make a new instance of an entity, setting appropriate fields based
-		 * on the parameters passed.
-		 * 
-		 * @param entityName Identifier by which to look up the entity on the 
-		 *                                       TemplateManager.
-		 * @param params     Properties to assign, by key/value. Keys can be
-		 *                                       strings or PropertyReferences. Values can be any
-		 *                                       type.
-		 */
-		function makeEntity(entityName:String, params:Object = null):IEntity
-		
-        // Convenience.
-        function lookup(name:String):IPBObject;
+        // Name lookups.
+        function lookup(name:String):*;
         function lookupEntity(name:String):IEntity;
         function lookupComponent(entityName:String, componentName:String):IEntityComponent;
-        
-        function schedule(delay:Number, func:Function, args:Array):void;
-        function callLater(func:Function, args:Array):void;
-        
-        function log(reporter:*, text:String):void;
-        
-        function load(filename:String, resourceType:Class, 
-                        onLoaded:Function = null, onFailed:Function = null, 
-                        forceReload:Boolean = false):Resource;
-        
-        function findChild(childName:String):DisplayObject;
-        
-        function isKeyDown(key:InputKey):Boolean;
-        function wasKeyPressed(key:InputKey):Boolean;
-        function wasKeyReleased(key:InputKey):Boolean;
-        function isAnyKeyDown():Boolean;
     }
 }

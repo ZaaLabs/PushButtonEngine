@@ -137,7 +137,7 @@ package com.pblabs.engine.resource
             else if (resource.isLoaded)
             {
                 if (onLoaded != null)
-                    PBE.callLater(onLoaded, [ resource ]);
+                    PBUtil.callLater(onLoaded, [ resource ]);
             }
             else
             {
@@ -291,7 +291,7 @@ package com.pblabs.engine.resource
             
             Logger.error(this, "load", message);
             if (onFailed != null)
-                PBE.callLater(onFailed, [resource]);
+                PBUtil.callLater(onFailed, [resource]);
         }
         
         /**

@@ -9,8 +9,10 @@
 package com.pblabs.engine.serialization
 {
     import com.pblabs.engine.core.IEntity;
+    import com.pblabs.engine.core.IEntityComponent;
     import com.pblabs.engine.core.IPBContext;
     import com.pblabs.engine.core.PBGroup;
+    import com.pblabs.engine.core.PropertyReference;
     import com.pblabs.engine.debug.Logger;
     import com.pblabs.engine.debug.Profiler;
     import com.pblabs.engine.resource.ResourceManager;
@@ -159,6 +161,64 @@ package com.pblabs.engine.serialization
                 Profiler.exit("instantiateEntity");
             }
             
+            return entity;
+        }
+        
+        
+        
+        /**
+         * Make a new instance of an entity, setting appropriate fields based
+         * on the parameters passed.
+         * 
+         * @param entityName Identifier by which to look up the entity on the 
+         *                                       TemplateManager.
+         * @param params     Properties to assign, by key/value. Keys can be
+         *                                       strings or PropertyReferences. Values can be any
+         *                                       type.
+         */
+        public function makeEntity(entityName:String, params:Object = null):IEntity
+        {
+            // Create the entity.
+            var entity:IEntity = instantiateEntity(entityName);
+            if(!entity)
+                return null;
+            
+            if(!params)
+                return entity;
+            
+            // Set all the properties.
+            for(var key:* in params)
+            {
+                if(key is PropertyReference)
+                {
+                    // Fast case.
+                    entity.setProperty(key, params[key]);
+                }
+                else if(key is String)
+                {
+                    // Slow case.
+                    // Special case to allow "@foo": to assign foo as a new component... named foo.
+                    if(String(key).charAt(0) == "@" && String(key).indexOf(".") == -1)
+                    {
+                        entity.addComponent(IEntityComponent(params[key]), String(key).substring(1));
+                    }
+                    else
+                    {
+                        entity.setProperty(new PropertyReference(key), params[key]);
+                    }
+                }
+                else
+                {
+                    // Error case.
+                    Logger.error(this, "makeEntity", "Unexpected key '" + key + "'; can only handle String or PropertyReference.");
+                }
+            }
+            
+            // Finish deferring.
+            if(entity.deferring)
+                entity.deferring = false;
+            
+            // Give it to the user.
             return entity;
         }
         

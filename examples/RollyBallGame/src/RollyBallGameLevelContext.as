@@ -4,14 +4,15 @@ package
     import com.pblabs.engine.time.IAnimatedObject;
     import com.pblabs.engine.time.ITickedObject;
     import com.pblabs.engine.time.ProcessManager;
+    import com.pblabs.rendering2D.ui.PBLabel;
+    import com.pblabs.rendering2D.ui.SceneView;
     
     import flash.display.Sprite;
     import flash.geom.Rectangle;
+    import flash.text.TextFormatAlign;
     
     public class RollyBallGameLevelContext extends LevelContext implements IAnimatedObject, ITickedObject
     {
-        public var display:Sprite = new Sprite();
-        
         public var sceneView:SceneView = new SceneView();
         public var lblTime:PBLabel = new PBLabel();
         public var lblScore:PBLabel = new PBLabel();
@@ -35,14 +36,14 @@ package
             sceneView.name = "MainView";
             sceneView.width = 640;
             sceneView.height = 480;
-            display.addChild(sceneView);
+            addChild(sceneView);
             
             // Label to display the time remaining.
             addChild(lblTime);
             lblTime.extents = new Rectangle(0, 0, 150, 30);
             lblTime.fontColor = 0xFFFF00;
             lblTime.fontSize = 24;
-            display.lblTime.refresh();
+            lblTime.refresh();
             
             // Score indicator (also a label).
             addChild(lblScore);
@@ -50,17 +51,17 @@ package
             lblScore.fontColor = 0xFFFF00;
             lblScore.fontSize = 24;
             lblScore.fontAlign = TextFormatAlign.RIGHT;
-            display.lblScore.refresh();
+            lblScore.refresh();
         }
         
         public override function startup():void
         {
             super.startup();
             
-            mainStage.addChild(display);
-            
             processManager.addAnimatedObject(this);
             processManager.addTickedObject(this);
+            
+            resetTimerAndScore();
         }
         
         public override function shutdown():void
@@ -68,8 +69,6 @@ package
             processManager.removeTickedObject(this);
             processManager.removeAnimatedObject(this);
 
-            mainStage.removeChild(display);
-            
             super.shutdown();
         }
         
@@ -82,10 +81,10 @@ package
         public function onFrame(dt:Number):void
         {
             // Update the 
-            currentTime = levelDuration - (processManager.virtualTime - startTimer);
+            currentTime = levelDuration - (processManager.virtualTime - startTime);
             
             // Update time.
-            if(RollyBallGame.currentTime >= 0)
+            if(currentTime >= 0)
                 lblTime.caption = "Time: " + (currentTime/1000).toFixed(2);
             else
                 lblTime.caption = "Time: 0.00";
@@ -111,75 +110,16 @@ package
                 
                 // Kick off the scoreboard.
                 var sb:Scoreboard = new Scoreboard();
-                display.addChild(sb);
+                addChild(sb);
                 sb.StartReport(currentScore);
             }
         }        
-
         
         public function resetTimerAndScore():void
         {
-            startTimer = processManager.virtualTime;
+            startTime = processManager.virtualTime;
             currentScore = 0;
             currentTime = 0.0;            
         }
-        
-        public function resetLevel():void
-        {
-            // Reset the level.
-            var curLevel:int = LevelManager.instance.currentLevel;
-            
-            // Reset the coins.
-            var cs:PBSet = PBE.lookup("CoinSet") as PBSet;
-            if(cs)
-                cs.clear();
-            
-            // Hack to properly reset level data - level 0 is always loaded
-            // and has special logic in the manager, so we have to do this 
-            // hack for now -- BJG
-            LevelManager.instance.loadLevel(curLevel == 1 ? 2 : 1);
-            LevelManager.instance.loadLevel(curLevel);
-            
-            // Reset the timer and score.
-            resetTimerAndScore();
-        }
-        
-        public function restartGame():void
-        {
-            // Reset the coins.
-            var cs:PBSet = PBE.lookup("CoinSet") as PBSet;
-            if(cs)
-                cs.clear();
-            
-            // Reset the level.
-            LevelManager.instance.loadLevel(1);
-            
-            // Reset the timer and score.
-            resetTimerAndScore();
-        }
-        
-        public function nextLevel():void
-        {
-            // Reset the coins.
-            var cs:PBSet = PBE.lookup("CoinSet") as PBSet;
-            if(cs)
-                cs.clear();
-            
-            // Advance level as appropriate.
-            if(LevelManager.instance.currentLevel < 2)
-            {
-                LevelManager.instance.loadNextLevel();               
-                
-                // Reset the timer.
-                resetTimerAndScore();
-                
-                ScreenManager.instance.goto("game");
-            }
-            else
-            {
-                ScreenManager.instance.goto("gameOver");
-            }
-        }    
-        
     }
 }

@@ -4,6 +4,8 @@ package
     import com.pblabs.rendering2D.ui.PBLabel;
     import com.pblabs.screens.*;
     
+    import flash.events.Event;
+    import flash.events.EventDispatcher;
     import flash.events.MouseEvent;
     import flash.geom.Rectangle;
     import flash.text.TextFormatAlign;
@@ -15,6 +17,9 @@ package
     {
         public var statusLabel:PBLabel = new PBLabel();
         public var restartButton:PBButton = new PBButton();
+        
+        [Inject]
+        public var eventBus:EventDispatcher;
         
         public function GameOverScreen()
         {
@@ -33,8 +38,7 @@ package
             
             restartButton.addEventListener(MouseEvent.CLICK, function(e:*):void
             {
-                RollyBallGame.restartGame();
-                screenManager.goto("game");
+                eventBus.dispatchEvent(new Event(RollyBallGame.RESET_GAME_EVENT));
             });
         }
     }

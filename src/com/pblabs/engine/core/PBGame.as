@@ -11,6 +11,8 @@ package com.pblabs.engine.core
     import com.pblabs.screens.ScreenManager;
     import com.pblabs.sound.ISoundManager;
     import com.pblabs.sound.SoundManager;
+    
+    import flash.events.EventDispatcher;
 
     public class PBGame extends PBGameBase
     {
@@ -33,6 +35,9 @@ package com.pblabs.engine.core
             pm.addTickedObject(sm, 100);
             
             registerManager(ScreenManager, new ScreenManager());
+            
+            registerManager(PBGame, this);
+            registerManager(EventDispatcher, new EventDispatcher());
         }
         
         public function addResourceBundle(rb:ResourceBundle):void

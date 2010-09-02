@@ -13,6 +13,7 @@ package com.pblabs.rollyGame
     import com.pblabs.engine.input.InputKey;
     import com.pblabs.engine.input.InputManager;
     import com.pblabs.engine.resource.*;
+    import com.pblabs.engine.serialization.TemplateManager;
     import com.pblabs.rendering2D.*;
     import com.pblabs.sound.SoundManager;
     
@@ -26,6 +27,12 @@ package com.pblabs.rollyGame
     {
         [Inject]
         public var soundManager:SoundManager;
+        
+        [Inject]
+        public var inputManager:InputManager;
+        
+        [Inject]
+        public var templateManager:TemplateManager;
         
         public var Map:NormalMap;
         public var Height:Number = 1.0;
@@ -48,10 +55,10 @@ package com.pblabs.rollyGame
         public override function onTick(tickRate:Number):void
         {
             // Sample input.
-            _OnLeft(context.isKeyDown(InputKey.LEFT) ? 1 : 0);
-            _OnRight(context.isKeyDown(InputKey.RIGHT) ? 1 : 0);
-            _OnUp(context.isKeyDown(InputKey.UP) ? 1 : 0);
-            _OnDown(context.isKeyDown(InputKey.DOWN) ? 1 : 0);
+            _OnLeft(inputManager.isKeyDown(InputKey.LEFT.keyCode) ? 1 : 0);
+            _OnRight(inputManager.isKeyDown(InputKey.RIGHT.keyCode) ? 1 : 0);
+            _OnUp(inputManager.isKeyDown(InputKey.UP.keyCode) ? 1 : 0);
+            _OnDown(inputManager.isKeyDown(InputKey.DOWN.keyCode) ? 1 : 0);
             
             // Sample the map for our current position.
             var n:Point = tmpPoint;
@@ -98,12 +105,12 @@ package com.pblabs.rollyGame
                 so.owner.destroy();
                 
                 // Grant score.
-                RollyBallGame.currentScore++;
+                (context as RollyBallGameLevelContext).currentScore++;
                 if(PickupSound)
                     soundManager.play(PickupSound);
                 
                 // Spawn a new coin somewhere.
-                context.makeEntity("Coin", 
+                templateManager.makeEntity("Coin", 
                     {
                         "@Spatial.position": new Point(20 + Math.random() * 600, 20 + Math.random() * 400) 
                     });

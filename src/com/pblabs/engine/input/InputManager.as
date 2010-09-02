@@ -67,21 +67,10 @@ package com.pblabs.engine.input
         {
             // This function tracks which keys were just pressed (or released) within the last tick.
             // It should be called at the beginning of the tick to give the most accurate responses possible.
-            
-            var cnt:int;
-            
-            for (cnt = 0; cnt < _keyState.length; cnt++)
+            for (var cnt:int = 0; cnt < _keyState.length; cnt++)
             {
-                if (_keyState[cnt] && !_keyStateOld[cnt])
-                    _justPressed[cnt] = true;
-                else
-                    _justPressed[cnt] = false;
-                
-                if (!_keyState[cnt] && _keyStateOld[cnt])
-                    _justReleased[cnt] = true;
-                else
-                    _justReleased[cnt] = false;
-                
+                _justPressed[cnt] = (_keyState[cnt] && !_keyStateOld[cnt])
+                _justReleased[cnt] = (!_keyState[cnt] && _keyStateOld[cnt])
                 _keyStateOld[cnt] = _keyState[cnt];
             }
         }
@@ -89,7 +78,7 @@ package com.pblabs.engine.input
         /**
          * Returns whether or not a key was pressed since the last tick.
          */
-        public function keyJustPressed(keyCode:int):Boolean
+        public function wasKeyJustPressed(keyCode:int):Boolean
         {
             return _justPressed[keyCode];
         }
@@ -97,7 +86,7 @@ package com.pblabs.engine.input
         /**
          * Returns whether or not a key was released since the last tick.
          */
-        public function keyJustReleased(keyCode:int):Boolean
+        public function wasKeyJustReleased(keyCode:int):Boolean
         {
             return _justReleased[keyCode];
         }

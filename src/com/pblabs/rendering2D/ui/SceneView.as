@@ -9,6 +9,7 @@
 package com.pblabs.rendering2D.ui
 {
     import com.pblabs.engine.PBE;
+    import com.pblabs.engine.core.IPBContext;
     
     import flash.display.DisplayObject;
     import flash.display.Sprite;
@@ -23,16 +24,18 @@ package com.pblabs.rendering2D.ui
      */
     public class SceneView extends Sprite implements IUITarget
     {
+        [Inject]
+        public var context:IPBContext;
 		
 		public function SceneView()
 		{
-			if(PBE.mainClass)
+			if(context && context.mainClass)
 			{
-				PBE.mainClass.addChild(this);
+				context.mainClass.addChild(this);
 				
 				// Intelligent default size.
-				width = PBE.mainStage.stage.stageWidth;
-				height = PBE.mainStage.stage.stageHeight;
+				width = context.mainStage.stage.stageWidth;
+				height = context.mainStage.stage.stageHeight;
 				name = "SceneView";
 			}
 		}

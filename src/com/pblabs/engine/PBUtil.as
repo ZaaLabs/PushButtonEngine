@@ -706,5 +706,49 @@ package com.pblabs.engine
             
             mainStage.quality = _stageQualityStack.pop();
         }
+        
+        protected static var callLaterQueue:Array = [];
+        
+        /**
+         * Deferred function callback - called back at start of processing for next frame. Useful
+         * any time you are going to do setTimeout(someFunc, 1) - it's a lot cheaper to do it 
+         * this way.
+         * @param method Function to call.
+         * @param args Any arguments.
+         */
+        public static function callLater(method:Function, args:Array = null):void
+        {
+            var dm:DeferredMethod = new DeferredMethod();
+            dm.method = method;
+            dm.args = args;
+            callLaterQueue.push(dm);            
+        }
+        
+        public static function processCallLaters():void
+        {
+            // Do any deferred methods.
+            var oldCallLaterQueue:Array = callLaterQueue;
+            if(oldCallLaterQueue.length)
+            {
+                // Put a new array in the queue to avoid getting into corrupted
+                // state due to more calls being added.
+                callLaterQueue = [];
+                
+                for(var j:int=0; j<oldCallLaterQueue.length; j++)
+                {
+                    var curDM:DeferredMethod = oldCallLaterQueue[j] as DeferredMethod;
+                    curDM.method.apply(null, curDM.args);
+                }
+                
+                // Wipe the old array now we're done with it.
+                oldCallLaterQueue.length = 0;
+            }            
+        }
     }
+}
+
+final class DeferredMethod
+{
+    public var method:Function = null;;
+    public var args:Array = null;
 }

@@ -10,17 +10,18 @@ package com.pblabs.engine.debug
 {
     import com.pblabs.engine.PBE;
     import com.pblabs.engine.PBUtil;
-    import com.pblabs.engine.core.IPBObject;    import com.pblabs.engine.core.IPBContext;
-    import com.pblabs.engine.input.InputKey;
+    import com.pblabs.engine.core.IEntity;
+    import com.pblabs.engine.core.IEntityComponent;
+    import com.pblabs.engine.core.IPBContext;
+    import com.pblabs.engine.core.IPBObject;
     import com.pblabs.engine.core.PBGroup;
     import com.pblabs.engine.core.PBObject;
     import com.pblabs.engine.core.PBSet;
-    import com.pblabs.engine.core.IEntity;
-    import com.pblabs.engine.core.IEntityComponent;
     import com.pblabs.engine.core.PropertyReference;
+    import com.pblabs.engine.input.InputKey;
+    import com.pblabs.engine.pb_internal;
     import com.pblabs.engine.serialization.TypeUtility;
     import com.pblabs.engine.util.version.VersionType;
-    import com.pblabs.engine.pb_internal;
     
     import flash.display.DisplayObject;
     import flash.display.DisplayObjectContainer;
@@ -55,14 +56,31 @@ package com.pblabs.engine.debug
         public static var verbosity:int = 0;
         public static var showStackTrace:Boolean = false;
         
+        protected static var _contextList:Vector.<IPBContext> = new Vector.<IPBContext>();
         protected static var _currentContext:IPBContext = null;
         
         public static function get currentContext():IPBContext
         {
-            if(_currentContext == null)
-                _currentContext = PBE.defaultContext;
+            if(_currentContext == null && _contextList.length)
+                _currentContext = _contextList[0];
             
             return _currentContext;
+        }
+        
+        public static function registerContext(ctx:IPBContext):void
+        {
+            _contextList.push(ctx);
+        }
+        
+        public static function unregisterContext(ctx:IPBContext):void
+        {
+            var idx:int = _contextList.indexOf(ctx);
+            if(idx == -1)
+                throw new Error("Trying to unregister unknown context.");
+            _contextList.splice(idx,1);
+            
+            if(_currentContext == ctx)
+                _currentContext = null;
         }
         
         /**
@@ -262,9 +280,9 @@ package com.pblabs.engine.debug
             {
                 Logger.print(this, "Contexts:");
                 
-                for(var i:int = 0; i<PBE.contextList.length; i++)
+                for(var i:int = 0; i<_contextList.length; i++)
                 {
-                    var c:IPBContext = PBE.contextList[i];
+                    var c:IPBContext = _contextList[i];
                     Logger.print(this, "   #" + (i+1) + ". " + c.name);
                 }
             }, "() List available contexts.");
@@ -279,7 +297,7 @@ package com.pblabs.engine.debug
                     // We work in 1 based for display, but internall it's 0 based.
                     asNumber--;
                     
-                    if(asNumber >= PBE.contextList.length)
+                    if(asNumber >= _contextList.length)
                     {
                         Logger.error(this, "setContext", "Context #" + asNumber + " does not exist.");
                         return;
@@ -290,10 +308,10 @@ package com.pblabs.engine.debug
                 else
                 {
                     // Otherwise try to match name.
-                    for(var i:int=0; i<PBE.contextList.length; i++)
+                    for(var i:int=0; i<_contextList.length; i++)
                     {
                         // Filter.
-                        if(PBE.contextList[i].name.toLowerCase() != param.toLowerCase())
+                        if(_contextList[i].name.toLowerCase() != param.toLowerCase())
                             continue;
                         
                         // Match!
@@ -308,7 +326,7 @@ package com.pblabs.engine.debug
                     }
                 }
                 
-                _currentContext = PBE.contextList[selectedIdx];
+                _currentContext = _contextList[selectedIdx];
                 Logger.print(this, "Context switched to #" + (selectedIdx+1) + " " + _currentContext.name);
 
             }, "(name or id) Identify a context by name or number and set it as the active one.");

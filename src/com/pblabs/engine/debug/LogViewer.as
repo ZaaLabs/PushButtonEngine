@@ -122,7 +122,7 @@ package com.pblabs.engine.debug
         protected function onBitmapClick(me:MouseEvent):void
         {
             // Give focus to input.
-            PBE.mainStage.focus = _input;
+            stage.focus = _input;
         }
         
         protected function onBitmapDoubleClick(me:MouseEvent = null):void
@@ -197,7 +197,7 @@ package com.pblabs.engine.debug
         protected function setHistory(old:String):void
         {
             _input.text = old;
-            PBE.callLater(function():void { _input.setSelection(_input.length, _input.length); });
+            PBUtil.callLater(function():void { _input.setSelection(_input.length, _input.length); });
         }
         
         protected function onInputKeyDown(event:KeyboardEvent):void
@@ -337,7 +337,7 @@ package com.pblabs.engine.debug
                 // Make sure we keep focus. TODO: This is not ideal, it still flickers the yellow box.
                 var oldfr:* = stage.stageFocusRect;
                 stage.stageFocusRect = false;
-                PBE.callLater(function():void {
+                PBUtil.callLater(function():void {
                     stage.focus = _input;
                     stage.stageFocusRect = oldfr;
                 });
@@ -406,7 +406,12 @@ package com.pblabs.engine.debug
                 if(!logCache[i])
                     continue;
 
-                glyphCache.drawLineToBitmap(logCache[i].text, 0, _outputBitmap.height - (endLine+1-i)*glyphCache.getLineHeight(), logCache[i].color, _outputBitmap.bitmapData);
+                glyphCache.drawLineToBitmap(
+                    logCache[i].text, 
+                    0, 
+                    _outputBitmap.height - (endLine+1-i)*glyphCache.getLineHeight(), 
+                    logCache[i].color, 
+                    _outputBitmap.bitmapData);
             }
             
             Profiler.exit("LogViewer.redrawLog");
@@ -440,13 +445,13 @@ package com.pblabs.engine.debug
             layout();
             _input.text = "";
             addListeners();
-            PBE.mainStage.focus = _input;
+            stage.focus = _input;
         }
         
         public function deactivate():void
         {
             removeListeners();
-            PBE.mainStage.focus = null;
+            stage.focus = null;
         }
         
         public function set restrict(value:String):void

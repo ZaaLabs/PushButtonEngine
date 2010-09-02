@@ -3,6 +3,7 @@ package com.pblabs.engine.core
     import com.pblabs.engine.debug.Logger;
     
     import flash.display.DisplayObject;
+    import flash.display.DisplayObjectContainer;
     import flash.utils.Dictionary;
     
     import org.swiftsuspenders.Injector;
@@ -10,16 +11,16 @@ package com.pblabs.engine.core
     public class PBGameBase
     {
         protected var injector:Injector = new Injector();
-        protected var _main:DisplayObject = null;
+        protected var _main:DisplayObjectContainer = null;
         protected var _contexts:Object = {};
         protected var _currentContext:IPBContext = null;
         private var _managers:Dictionary = new Dictionary();
 
-        public function startup(main:DisplayObject):void
+        public function startup(main:DisplayObjectContainer):void
         {
             // Make sure PBE services are initialized.
-            Logger.print(this, "Initializing game.");
-            Logger.startup();
+            Logger.print(this, "Initializing " + this + ".");
+            Logger.startup(main.stage);
             
             // Note main class.
             _main = main;
@@ -30,7 +31,7 @@ package com.pblabs.engine.core
 
         protected function initializeManagers():void
         {
-            // Nothing... For subclasses!
+            // Mostly will come from subclasses.
         }
 
         public function registerManager(clazz:Class, instance:* = null, name:String = null):void
@@ -38,6 +39,7 @@ package com.pblabs.engine.core
             var i:* = instance ? instance : new clazz(); 
             _managers[clazz + "|" + name] = i;
             injector.mapValue(clazz, i, name);
+            injector.injectInto(i);
         }
         
         public function getManager(clazz:Class, name:String = null):*
@@ -80,6 +82,8 @@ package com.pblabs.engine.core
             // Shutdown the old context.
             if(_currentContext)
             {
+                if(_currentContext is DisplayObject)
+                    _main.removeChild(_currentContext as DisplayObject);
                 _currentContext.shutdown();
                 _currentContext = null;
             }
@@ -88,6 +92,8 @@ package com.pblabs.engine.core
             _currentContext = _contexts[name];
             if(_currentContext)
             {
+                if(_currentContext is DisplayObject)
+                    _main.addChild(_currentContext as DisplayObject);
                 _currentContext.startup();
             }
             else

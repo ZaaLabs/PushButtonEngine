@@ -12,6 +12,7 @@ package com.pblabs.engine.debug
     import com.pblabs.engine.input.InputKey;
     import com.pblabs.engine.input.InputManager;
     
+    import flash.display.Stage;
     import flash.events.KeyboardEvent;
     import flash.ui.Keyboard;
 
@@ -23,10 +24,12 @@ package com.pblabs.engine.debug
     public class UIAppender implements ILogAppender
     {
         protected var _logViewer:LogViewer;
+        protected var _stage:Stage;
        
-        public function UIAppender()
+        public function UIAppender(s:Stage)
         {
-            PBE.mainStage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
+            _stage = s;
+            _stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
             
             _logViewer = new LogViewer();
         }
@@ -45,7 +48,7 @@ package com.pblabs.engine.debug
                 }
                 else
                 {
-                    PBE.mainStage.addChild(_logViewer);
+                    _stage.addChild(_logViewer);
                     var char:String = String.fromCharCode(event.charCode);
                     _logViewer.restrict = "^"+char.toUpperCase()+char.toLowerCase();    // disallow hotKey character
                     _logViewer.activate();

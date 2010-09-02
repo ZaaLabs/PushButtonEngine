@@ -1,18 +1,23 @@
 package com.pblabs.screens
 {
     import com.pblabs.engine.PBE;
+    import com.pblabs.engine.core.IPBContext;
     
     import flash.display.DisplayObject;
     import flash.display.Sprite;
     import flash.events.Event;
     import flash.geom.Rectangle;
     
-    public class BaseModalDialog extends Sprite{
+    public class BaseModalDialog extends Sprite
+    {
 
 		protected var _dontReposition:Boolean = false;
 
         public static const MODAL_KILL:String = "modalKill";
 
+        [Inject]
+        public var context:IPBContext;
+        
 		[Inject]
 		public var screenManager:ScreenManager;
 		
@@ -42,10 +47,10 @@ package com.pblabs.screens
         public function positionModal():void
         {
 			if(this._dontReposition == true) return;
-            x = ((PBE.mainStage.stageWidth - modalWidth) / 2);
-            y = ((PBE.mainStage.stageHeight - modalHeight) / 2);            
+            x = ((context.mainStage.stageWidth - modalWidth) / 2);
+            y = ((context.mainStage.stageHeight - modalHeight) / 2);
         }
-                
+        
         /**
          * Get rid of this modal, allowing any additional modals to be 
          * displayed.

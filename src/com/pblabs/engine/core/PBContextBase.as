@@ -2,6 +2,7 @@ package com.pblabs.engine.core
 {
     import com.pblabs.engine.PBE;
     import com.pblabs.engine.PBUtil;
+    import com.pblabs.engine.debug.Console;
     import com.pblabs.engine.debug.Logger;
     import com.pblabs.engine.pb_internal;
     import com.pblabs.engine.serialization.TemplateManager;
@@ -10,6 +11,7 @@ package com.pblabs.engine.core
     
     import flash.display.DisplayObject;
     import flash.display.LoaderInfo;
+    import flash.display.Sprite;
     import flash.display.Stage;
     import flash.events.EventDispatcher;
     import flash.events.IEventDispatcher;
@@ -19,11 +21,9 @@ package com.pblabs.engine.core
     
     use namespace pb_internal;
     
-    public class PBContextBase extends EventDispatcher implements IPBContext
+    public class PBContextBase extends Sprite implements IPBContext
     {
         protected static var contextNameCounter:int = 0;
-        
-        protected var _main:DisplayObject = null;
         
         private var _managers:Dictionary = new Dictionary();
         
@@ -31,38 +31,23 @@ package com.pblabs.engine.core
         
         private var _versionDetails:VersionDetails;
         
-        private var _name:String = null;
-        
-        public function PBContextBase(name:String = null):void
+        public function PBContextBase(_name:String = null):void
         {
-            _name = name;
+            if (!name)
+                initializeName();
+            else
+                name = _name;
         }
         
         protected function initializeName():void
         {
             contextNameCounter++;
-            _name = "Context" + contextNameCounter;
+            name = "Context" + contextNameCounter;
         }
         
-        public function get name():String
+        public function startup():void
         {
-            return _name;
-        }
-        
-        public function startup(mainInstance:DisplayObject, name:String = null):void
-        {
-            if (!name)
-                initializeName();
-            else
-                _name = name;
-            
-            _main = mainInstance;
-            
-            Logger.print(this, "Initializing PushButton Engine Context '" + _name + "'.");
-            
-            PBE.registerContext(this);
-            
-            Logger.startup();
+            Logger.print(this, "Initializing " + this + " '" + name + "'.");
             
             // Register ourselves.
             registerManager(IPBContext, this);
@@ -76,8 +61,9 @@ package com.pblabs.engine.core
             _currentGroup = _rootGroup = rg;
             
             // Allow injection on main class and ourselves, too.
-            inject(mainInstance);
             inject(this);
+            
+            Console.registerContext(this);
         }
         
         protected function initializeManagers():void
@@ -92,21 +78,26 @@ package com.pblabs.engine.core
             // Tear down the simulation.
             _currentGroup = null;
             rootGroup.destroy();
+            
+            Console.unregisterContext(this);            
         }
         
         public function get started():Boolean
         {
-            return _main != null;
+            throw new Error("Always returning true, boss!");
+            return true;
         }
         
-        public function registerManager(clazz:Class, instance:Object, optionalName:String = null):void
+        public function registerManager(clazz:Class, instance:Object = null, optionalName:String = null):void
         {
-            _managers[clazz + "" + optionalName] = instance;
+            if(!optionalName)
+                optionalName = "";
+            _managers[clazz + "|" + optionalName] = instance;
         }
         
         public function getManager(clazz:Class, optionalName:String = null):*
         {
-            return _managers[clazz + "" + optionalName];
+            return _managers[clazz + "|" + optionalName];
         }
         
         public function inject(instance:*):void
@@ -187,23 +178,23 @@ package com.pblabs.engine.core
         
         public function get mainClass():*
         {
-            return _main;
+            return this;
         }
         
         public function get mainStage():Stage
         {
-            return _main.stage;
+            return this.stage;
         }
         
         public function get flashVars():Object
         {
-            return LoaderInfo(_main.loaderInfo).parameters;
+            return LoaderInfo(this.loaderInfo).parameters;
         }
         
         public function get hostingDomain():String
         {
             // Get at the hosting domain.
-            var urlString:String = _main.stage.loaderInfo.url;
+            var urlString:String = mainStage.loaderInfo.url;
             var urlParts:Array = urlString.split("://");
             var wwwPart:Array = urlParts[1].split("/");
             if (wwwPart.length)
@@ -215,7 +206,7 @@ package com.pblabs.engine.core
         public function get versionDetails():VersionDetails
         {
             if (!_versionDetails)
-                _versionDetails = VersionUtil.checkVersion(_main);
+                _versionDetails = VersionUtil.checkVersion(this);
             
             return _versionDetails;
         }
@@ -224,64 +215,20 @@ package com.pblabs.engine.core
         {
             return PBUtil.findChild(name, mainClass);
         }
-        
-        
-        public function schedule(delay:Number, func:Function, args:Array):void
+
+        public function lookup(name:String):*
         {
-            //processManager.schedule(delay, null, func, arg);
+            return (getManager(NameManager) as NameManager).lookup(name);            
         }
         
-        
-        public function log(reporter:*, text:String):void
+        public function lookupEntity(name:String):IEntity
         {
-            Logger.print(reporter, text);
+            return (getManager(NameManager) as NameManager).lookup(name) as IEntity;            
         }
         
-        public function makeEntity(entityName:String, params:Object = null):IEntity
+        public function lookupComponent(entityName:String, componentName:String):IEntityComponent
         {
-            // Create the entity.
-            var entity:IEntity = getManager(TemplateManager).instantiateEntity(entityName);
-            if (!entity)
-                return null;
-            
-            if (!params)
-                return entity;
-            
-            // Set all the properties.
-            for (var key:* in params)
-            {
-                if (key is PropertyReference)
-                {
-                    // Fast case.
-                    entity.setProperty(key, params[key]);
-                }
-                else if (key is String)
-                {
-                    // Slow case.
-                    // Special case to allow "@foo": to assign foo as a new component... named foo.
-                    if (String(key).charAt(0) == "@" && String(key).indexOf(".") == -1)
-                    {
-                        entity.addComponent(IEntityComponent(params[key]), String(key).substring(1));
-                    }
-                    else
-                    {
-                        entity.setProperty(new PropertyReference(key), params[key]);
-                    }
-                }
-                else
-                {
-                    // Error case.
-                    Logger.error(PBE, "MakeEntity", "Unexpected key '" + key + "'; can only handle String or PropertyReference.");
-                }
-            }
-            
-            // Finish deferring.
-            if (entity.deferring)
-                entity.deferring = false;
-            
-            // Give it to the user.
-            return entity;
+            return (getManager(NameManager) as NameManager).lookupComponentByName(entityName, componentName);
         }
-        
     }
 }

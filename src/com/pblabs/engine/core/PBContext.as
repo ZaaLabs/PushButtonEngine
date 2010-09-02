@@ -9,12 +9,12 @@ package com.pblabs.engine.core
     import com.pblabs.engine.time.IProcessManager;
     import com.pblabs.engine.time.ITickedObject;
     import com.pblabs.engine.time.ProcessManager;
-    import com.pblabs.rendering.BasicSpatialManager;
-    import com.pblabs.rendering.DisplayObjectScene;
-    import com.pblabs.rendering.IScene;
-    import com.pblabs.rendering.ISpatialManager;
-    import com.pblabs.rendering.SceneAlignment;
-    import com.pblabs.rendering.ui.IUITarget;
+    import com.pblabs.rendering2D.BasicSpatialManager2D;
+    import com.pblabs.rendering2D.DisplayObjectScene;
+    import com.pblabs.rendering2D.IScene2D;
+    import com.pblabs.rendering2D.ISpatialManager2D;
+    import com.pblabs.rendering2D.SceneAlignment;
+    import com.pblabs.rendering2D.ui.IUITarget;
     import com.pblabs.screens.ScreenManager;
     import com.pblabs.sound.ISoundManager;
     import com.pblabs.sound.SoundManager;
@@ -27,14 +27,19 @@ package com.pblabs.engine.core
     {
 		public var injector:Injector = new Injector();
 		
-		public function PBContext(mainInstance:DisplayObject = null, name:String = null):void
+		public function PBContext(name:String = null):void
 		{
-			super(mainInstance, name);
+			super(name);
 		}
 
-		public override function registerManager(clazz:Class, instance:Object, optionalName:String=null):void
+		public override function registerManager(clazz:Class, instance:Object = null, optionalName:String=null):void
 		{
-			injector.mapValue(clazz, instance, optionalName == null ? "" : optionalName);
+            if(!instance)
+                instance = allocate(clazz);
+            if(!optionalName)
+                optionalName = "";
+            
+			injector.mapValue(clazz, instance, optionalName);
 
 			super.registerManager(clazz, instance, optionalName);
 			
@@ -46,7 +51,7 @@ package com.pblabs.engine.core
 				m.startup();
 		}
 		
-        public function setInjectorParent(i:Injector)
+        public function setInjectorParent(i:Injector):void
         {
             injector.setParentInjector(i);
         }

@@ -170,10 +170,12 @@ package com.pblabs.engine.time
 			
 			if(!timer)
 				timer = new Timer(32);
-			timer.delay = 1000 / PBE.mainStage.frameRate;
+			timer.delay = 1000 / context.mainStage.frameRate;
 			timer.start();
 			timer.addEventListener(TimerEvent.TIMER, onFrame);
 			started = true;
+            
+            Logger.print(this, "Started at " + context.mainStage.frameRate + "Hz");
 		}
 		
 		public var timer:Timer;
@@ -323,19 +325,9 @@ package com.pblabs.engine.time
 			_virtualTime += amount;
 		}
 		
-		/**
-		 * Deferred function callback - called back at start of processing for next frame. Useful
-		 * any time you are going to do setTimeout(someFunc, 1) - it's a lot cheaper to do it 
-		 * this way.
-		 * @param method Function to call.
-		 * @param args Any arguments.
-		 */
 		public function callLater(method:Function, args:Array = null):void
 		{
-			var dm:DeferredMethod = new DeferredMethod();
-			dm.method = method;
-			dm.args = args;
-			deferredMethodQueue.push(dm);
+            PBUtil.callLater(method, args);
 		}
 		
 		/**
@@ -357,7 +349,7 @@ package com.pblabs.engine.time
 			// If we are in a tick, defer the add.
 			if(duringAdvance)
 			{
-				context.callLater(addObject, [ object, priority, list]);
+				PBUtil.callLater(addObject, [ object, priority, list]);
 				return;
 			}
 			
@@ -457,6 +449,7 @@ package com.pblabs.engine.time
 			// Note new last time.
 			lastTime = currentTime;
 			
+            // Rejigger our events so we get called back soon.
 			timer.start();
 			event.updateAfterEvent();
             if(context.mainStage)
@@ -579,28 +572,11 @@ package com.pblabs.engine.time
 		
 		private function processScheduledObjects():void
 		{
-			// Do any deferred methods.
-			var oldDeferredMethodQueue:Array = deferredMethodQueue;
-			if(oldDeferredMethodQueue.length)
-			{
-				Profiler.enter("callLater");
-				
-				// Put a new array in the queue to avoid getting into corrupted
-				// state due to more calls being added.
-				deferredMethodQueue = [];
-				
-				for(var j:int=0; j<oldDeferredMethodQueue.length; j++)
-				{
-					var curDM:DeferredMethod = oldDeferredMethodQueue[j] as DeferredMethod;
-					curDM.method.apply(null, curDM.args);
-				}
-				
-				// Wipe the old array now we're done with it.
-				oldDeferredMethodQueue.length = 0;
-				
-				Profiler.exit("callLater");
-			}
-			
+            // Pump the call later queue.
+            Profiler.enter("callLater");
+            PBUtil.processCallLaters();
+            Profiler.exit("callLater");
+            
 			// Process any queued items.
 			if(thinkHeap.size)
 			{
@@ -687,10 +663,4 @@ final class ProcessObject
 	public var profilerKey:String = null;
 	public var listener:* = null;
 	public var priority:Number = 0.0;
-}
-
-final class DeferredMethod
-{
-	public var method:Function = null;;
-	public var args:Array = null;
 }

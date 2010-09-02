@@ -12,6 +12,8 @@ package com.pblabs.engine.debug
     import com.pblabs.engine.serialization.TypeUtility;
     import com.pblabs.engine.util.version.VersionDetails;
     import com.pblabs.engine.util.version.VersionUtil;
+    
+    import flash.display.Stage;
 
     /**
      * The Logger class provides mechanisms to print and listen for errors, warnings,
@@ -46,7 +48,7 @@ package com.pblabs.engine.debug
         /**
          * Initialize the logging system.
          */
-        public static function startup():void
+        public static function startup(s:Stage):void
         {
             // Don't start more than once!
             if(started)
@@ -56,13 +58,13 @@ package com.pblabs.engine.debug
             registerListener(new TraceAppender());
             
             if(!PBE.IS_SHIPPING_BUILD)
-                registerListener(new UIAppender());
+                registerListener(new UIAppender(s));
             
             // Process pending messages.
             started = true;
 
             // Print out a helpful version string.
-            var vd:VersionDetails = VersionUtil.checkVersion(PBE.mainStage);
+            var vd:VersionDetails = VersionUtil.checkVersion(s);
             Logger.print(Logger, vd.toString());
             Logger.print(Logger, new Date().toString());
 
