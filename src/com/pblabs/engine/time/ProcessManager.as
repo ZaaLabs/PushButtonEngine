@@ -13,6 +13,7 @@ package com.pblabs.engine.time
 	import com.pblabs.engine.PBUtil;
 	import com.pblabs.engine.core.IEntityComponent;
 	import com.pblabs.engine.core.IPBContext;
+	import com.pblabs.engine.core.PBGame;
 	import com.pblabs.engine.debug.*;
 	import com.pblabs.engine.serialization.TypeUtility;
 	import com.pblabs.engine.util.IPrioritizable;
@@ -42,7 +43,7 @@ package com.pblabs.engine.time
 	public class ProcessManager implements IProcessManager
 	{
 		[Inject]
-		public var context:IPBContext;
+		public var game:PBGame;
 		
 		/**
 		 * If true, disables warnings about losing ticks.
@@ -170,12 +171,12 @@ package com.pblabs.engine.time
 			
 			if(!timer)
 				timer = new Timer(32);
-			timer.delay = 1000 / context.mainStage.frameRate;
+			timer.delay = 1000 / game.mainStage.frameRate;
 			timer.start();
 			timer.addEventListener(TimerEvent.TIMER, onFrame);
 			started = true;
             
-            Logger.print(this, "Started at " + context.mainStage.frameRate + "Hz");
+            Logger.print(this, "Started at " + game.mainStage.frameRate + "Hz");
 		}
 		
 		public var timer:Timer;
@@ -194,7 +195,7 @@ package com.pblabs.engine.time
 			}
 			
 			started = false;
-			context.mainStage.removeEventListener(Event.ENTER_FRAME, onFrame);
+            game.mainStage.removeEventListener(Event.ENTER_FRAME, onFrame);
 		}
 		
 		/**
@@ -452,8 +453,8 @@ package com.pblabs.engine.time
             // Rejigger our events so we get called back soon.
 			timer.start();
 			event.updateAfterEvent();
-            if(context.mainStage)
-			    context.mainStage.invalidate();
+            if(game.mainStage)
+                game.mainStage.invalidate();
 		}
 		
 		private function advance(deltaTime:Number, suppressSafety:Boolean = false):void

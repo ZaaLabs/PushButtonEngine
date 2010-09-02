@@ -3,7 +3,6 @@ package com.pblabs.engine.core
     import com.pblabs.engine.debug.Profiler;
     import com.pblabs.engine.input.InputManager;
     import com.pblabs.engine.resource.ResourceManager;
-    import com.pblabs.engine.serialization.LevelManager;
     import com.pblabs.engine.serialization.Serializer;
     import com.pblabs.engine.serialization.TemplateManager;
     import com.pblabs.engine.time.IProcessManager;
@@ -56,7 +55,7 @@ package com.pblabs.engine.core
             injector.setParentInjector(i);
         }
 
-        public override function inject(instance:*):void
+        public override function injectInto(instance:*):void
 		{
 			injector.injectInto(instance);			
 		}
@@ -67,11 +66,15 @@ package com.pblabs.engine.core
 			
 			var res:* = super.allocate(type);
 			
-			inject(res);
+			injectInto(res);
 			
 			Profiler.exit("PBContext.allocate");
 			
 			return res;
 		}
+        
+        protected override function initializeManagers():void
+        {
+        }   
     }
 }

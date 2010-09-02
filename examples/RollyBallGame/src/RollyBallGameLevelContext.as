@@ -2,6 +2,7 @@ package
 {
     import com.pblabs.engine.serialization.LevelContext;
     import com.pblabs.engine.time.IAnimatedObject;
+    import com.pblabs.engine.time.IProcessManager;
     import com.pblabs.engine.time.ITickedObject;
     import com.pblabs.engine.time.ProcessManager;
     import com.pblabs.rendering2D.ui.PBLabel;
@@ -24,7 +25,7 @@ package
         public var currentScore:int = 0;
         
         [Inject]
-        public var processManager:ProcessManager;
+        public var processManager:IProcessManager;
         
         public function RollyBallGameLevelContext(name:String, levelUrl:String, group:String)
         {

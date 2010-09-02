@@ -18,7 +18,7 @@ package com.pblabs.engine.time
     public class TickedComponent extends EntityComponent implements ITickedObject
     {
         [Inject]
-        public var processManager:ProcessManager;
+        public var processManager:IProcessManager;
         
         /**
          * The update priority for this component. Higher numbered priorities have

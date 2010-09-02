@@ -4,6 +4,7 @@ package com.pblabs.engine.core
     
     import flash.display.DisplayObject;
     import flash.display.DisplayObjectContainer;
+    import flash.display.Stage;
     import flash.utils.Dictionary;
     
     import org.swiftsuspenders.Injector;
@@ -27,6 +28,9 @@ package com.pblabs.engine.core
             
             // Set up managers.
             initializeManagers();
+            
+            // Inject into the main class.
+            injectInto(_main);
         }
 
         protected function initializeManagers():void
@@ -36,7 +40,8 @@ package com.pblabs.engine.core
 
         public function registerManager(clazz:Class, instance:* = null, name:String = null):void
         {
-            var i:* = instance ? instance : new clazz(); 
+            var i:* = instance ? instance : new clazz();
+            name = name ? name : "";
             _managers[clazz + "|" + name] = i;
             injector.mapValue(clazz, i, name);
             injector.injectInto(i);
@@ -77,6 +82,11 @@ package com.pblabs.engine.core
             _contexts[ctx.name] = null;
         }
         
+        public function injectInto(object:*):void
+        {
+            injector.injectInto(object);
+        }
+        
         public function switchContext(name:String):void
         {
             // Shutdown the old context.
@@ -106,5 +116,16 @@ package com.pblabs.engine.core
         {
             return _currentContext;
         }
+        
+        public function get mainStage():Stage
+        {
+            return _main.stage;   
+        }
+        
+        public function get mainClass():*
+        {
+            return _main;
+        }
+        
     }
 }

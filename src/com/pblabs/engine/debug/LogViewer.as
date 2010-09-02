@@ -451,7 +451,8 @@ package com.pblabs.engine.debug
         public function deactivate():void
         {
             removeListeners();
-            stage.focus = null;
+            if(stage)
+                stage.focus = null;
         }
         
         public function set restrict(value:String):void

@@ -3,7 +3,6 @@ package com.pblabs.engine.core
     import com.pblabs.engine.input.InputManager;
     import com.pblabs.engine.resource.ResourceBundle;
     import com.pblabs.engine.resource.ResourceManager;
-    import com.pblabs.engine.serialization.LevelManager;
     import com.pblabs.engine.serialization.Serializer;
     import com.pblabs.engine.serialization.TemplateManager;
     import com.pblabs.engine.time.IProcessManager;
@@ -18,6 +17,11 @@ package com.pblabs.engine.core
     {
         protected override function initializeManagers():void
         {
+            super.initializeManagers();
+
+            // Register ourselves.
+            registerManager(PBGame, this);
+            
             // Bring in the standard managers.
             var pm:ProcessManager = new ProcessManager();
             registerManager(IProcessManager, pm);
@@ -26,7 +30,6 @@ package com.pblabs.engine.core
             registerManager(InputManager, new InputManager());
             registerManager(NameManager, new NameManager());
             registerManager(ObjectTypeManager, new ObjectTypeManager());
-            registerManager(LevelManager, new LevelManager());
             registerManager(ResourceManager, new ResourceManager());
             registerManager(TemplateManager, new TemplateManager());
             
@@ -36,7 +39,6 @@ package com.pblabs.engine.core
             
             registerManager(ScreenManager, new ScreenManager());
             
-            registerManager(PBGame, this);
             registerManager(EventDispatcher, new EventDispatcher());
         }
         

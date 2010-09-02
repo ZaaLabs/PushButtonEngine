@@ -198,7 +198,7 @@ package com.pblabs.engine.core
                 }
                 
                 // Deserialize the XML into the component.
-				context.getManager(Serializer).deserialize(component, componentXML);
+				(context.getManager(Serializer) as Serializer).deserialize(context, component, componentXML);
             }
             
             // Deal with set membership.

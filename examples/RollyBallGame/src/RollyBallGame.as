@@ -13,6 +13,7 @@ package
     import com.pblabs.engine.debug.Logger;
     import com.pblabs.engine.resource.ResourceManager;
     import com.pblabs.engine.serialization.LevelContext;
+    import com.pblabs.engine.time.IProcessManager;
     import com.pblabs.engine.time.ProcessManager;
     import com.pblabs.rendering2D.*;
     import com.pblabs.rendering2D.spritesheet.*;
@@ -38,7 +39,7 @@ package
         public var resourceManager:ResourceManager;
         
         [Inject]
-        public var processManager:ProcessManager;
+        public var processManager:IProcessManager;
         
         [Inject]
         public var eventBus:EventDispatcher;

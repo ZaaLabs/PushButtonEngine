@@ -47,11 +47,8 @@ package com.pblabs.engine.serialization
      */
     public class TemplateManager extends EventDispatcher
     {
-        [Inject]
-        public var context:IPBContext;
-        
-        [Inject]
-        public var levelManager:LevelManager;
+        //[Inject]
+        //public var context:IPBContext;
         
         [Inject]
         public var serializer:Serializer;
@@ -119,7 +116,7 @@ package com.pblabs.engine.serialization
          *
          * @return The created entity, or null if it wasn't found.
          */
-        public function instantiateEntity(name:String):IEntity
+        public function instantiateEntity(name:String, context:IPBContext):IEntity
         {
             Profiler.enter("instantiateEntity");
             
@@ -151,7 +148,7 @@ package com.pblabs.engine.serialization
                     return null;
                 }
                 
-                var entity:IEntity=instantiateEntityFromXML(xml);
+                var entity:IEntity=instantiateEntityFromXML(xml, context);
                 Profiler.exit("instantiateEntity");
             }
             catch (e:Error)
@@ -176,10 +173,10 @@ package com.pblabs.engine.serialization
          *                                       strings or PropertyReferences. Values can be any
          *                                       type.
          */
-        public function makeEntity(entityName:String, params:Object = null):IEntity
+        public function makeEntity(context:IPBContext, entityName:String, params:Object = null):IEntity
         {
             // Create the entity.
-            var entity:IEntity = instantiateEntity(entityName);
+            var entity:IEntity = instantiateEntity(entityName, context);
             if(!entity)
                 return null;
             
@@ -225,7 +222,7 @@ package com.pblabs.engine.serialization
         /**
          * Given an XML literal, construct a valid entity from it.
          */
-        public function instantiateEntityFromXML(xml:XML):IEntity
+        public function instantiateEntityFromXML(xml:XML, context:IPBContext):IEntity
         {
             Profiler.enter("instantiateEntityFromXML");
             
@@ -256,7 +253,7 @@ package com.pblabs.engine.serialization
                     return null;
                 }
                 
-                serializer.deserialize(entity, xml);
+                serializer.deserialize(context, entity, xml);
                 serializer.clearCurrentEntity();
                 
                 // Don't forget to disable deferring.
@@ -286,7 +283,7 @@ package com.pblabs.engine.serialization
          * @return An array containing all the instantiated objects. If the group
          * wasn't found, the array will be empty.
          */
-        public function instantiateGroup(name:String):PBGroup
+        public function instantiateGroup(context:IPBContext, name:String):PBGroup
         {
             // Check for a callback.
             if (_things[name])
@@ -303,7 +300,7 @@ package com.pblabs.engine.serialization
             try
             {
                 // Create the group.
-                var group:PBGroup = doInstantiateGroup(name, new Dictionary()); 
+                var group:PBGroup = doInstantiateGroup(name, new Dictionary(), context); 
                 if (!group)
                     return null;
                 
@@ -542,7 +539,7 @@ package com.pblabs.engine.serialization
             return true;
         }
         
-        private function doInstantiateGroup(name:String, tree:Dictionary):PBGroup
+        private function doInstantiateGroup(name:String, tree:Dictionary, context:IPBContext):PBGroup
         {
             var xml:XML=getXML(name, "group");
             if (!xml)
@@ -554,10 +551,6 @@ package com.pblabs.engine.serialization
             {
                 actualGroup.initialize(name);
                 actualGroup.owningGroup = context.currentGroup;
-                
-                var ld:LevelDescription = levelManager.getLevelDescription(levelManager.currentLevel);
-                if(ld.groups.indexOf(name) == -1)
-                    ld.groups.push(name);
             }
             else
             {
@@ -565,7 +558,7 @@ package com.pblabs.engine.serialization
             }
             
             var oldGroup:PBGroup = context.currentGroup;
-            context.currentGroup = actualGroup;    
+            context.currentGroup = actualGroup;
             
             for each (var objectXML:XML in xml.*)
             {
@@ -581,7 +574,7 @@ package com.pblabs.engine.serialization
                     // if something bad happens.
                     try
                     {
-                        if (!doInstantiateGroup(childName, tree))
+                        if (!doInstantiateGroup(childName, tree, context))
                             return null;
                     }
                     catch (err:*)
@@ -593,7 +586,7 @@ package com.pblabs.engine.serialization
                 else if (objectXML.name() == "objectReference")
                 {
                     _inGroup = true;
-                    instantiateEntity(childName);
+                    instantiateEntity(childName, context);
                     _inGroup=false;
                 }
                 else

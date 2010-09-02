@@ -12,6 +12,7 @@ package com.pblabs.screens
     import com.pblabs.engine.core.*;
     import com.pblabs.engine.debug.Logger;
     import com.pblabs.engine.time.IAnimatedObject;
+    import com.pblabs.engine.time.IProcessManager;
     import com.pblabs.engine.time.ITickedObject;
     import com.pblabs.engine.time.ProcessManager;
     
@@ -50,8 +51,14 @@ package com.pblabs.screens
      */
     public class ScreenManager implements IAnimatedObject, ITickedObject, IPBManager
     {
+//        [Inject]
+//        public var context:IPBContext;
+        
         [Inject]
-        public var context:IPBContext;
+        public var game:PBGame;
+        
+        [Inject]
+        public var processManager:IProcessManager;
         
         /**
          * If this array is empty, it has no effect.
@@ -78,8 +85,8 @@ package com.pblabs.screens
          */
         public function startup():void
         {
-            context.getManager(ProcessManager).addTickedObject(this);
-            context.getManager(ProcessManager).addAnimatedObject(this);
+            processManager.addTickedObject(this);
+            processManager.addAnimatedObject(this);
             
             // See if we can safely add Sprites to the mainClass, 
             // if so it is our screenParent, else, use stage.
@@ -87,8 +94,8 @@ package com.pblabs.screens
             try
             {
                 var s:Sprite = new Sprite();
-                context.mainClass.addChild(s);
-                context.mainClass.removeChild(s);
+                game.mainClass.addChild(s);
+                game.mainClass.removeChild(s);
                 mainClassAcceptsSprites = true;
             }
             catch(e:Error)
@@ -97,12 +104,12 @@ package com.pblabs.screens
                 Logger.warn(this, "startup", "Detected Flex application, adding screens to stage not document class.");
             }
             
-            screenParent = mainClassAcceptsSprites ? context.mainClass : context.mainStage;
+            screenParent = mainClassAcceptsSprites ? game.mainClass : game.mainStage;
             
             // Register the allowedControls event hooks.
             for each(var e:String in eventsToEat)
             {
-                context.mainStage.addEventListener(e, eatEvent, true);
+                game.mainStage.addEventListener(e, eatEvent, true);
             }
             
         }
@@ -112,7 +119,7 @@ package com.pblabs.screens
             // Unhook the allowedControls listeners.
             for each(var e:String in eventsToEat)
             {
-                context.mainStage.removeEventListener(e, eatEvent, true);
+                game.mainStage.removeEventListener(e, eatEvent, true);
             }			
         }
         
@@ -128,7 +135,7 @@ package com.pblabs.screens
             if(ido && ido.name.indexOf("instance") != -1)
                 ido.name = "Screen_" + name;
             
-            context.inject(instance);
+            game.injectInto(instance);
         }
         
         /**
@@ -304,9 +311,9 @@ package com.pblabs.screens
         /**
          * Stick a modal dialog into the queue. It will get shown eventually.
          */
-        public function showModalDialog(dialog:BaseModalDialog, ...bullshit):void
+        public function showModalDialog(dialog:BaseModalDialog, ...ignore):void
         {
-            context.inject(dialog);
+            game.injectInto(dialog);
             
             // Put it in the queue, and update if needed.
             _modalQueue.push(dialog);
@@ -420,15 +427,15 @@ package com.pblabs.screens
             }
             
             if(_screenProxy.bitmapData == null 
-                || _screenProxy.bitmapData.width != context.mainStage.stageWidth 
-                || _screenProxy.bitmapData.height != context.mainStage.stageHeight)
+                || _screenProxy.bitmapData.width != game.mainStage.stageWidth 
+                || _screenProxy.bitmapData.height != game.mainStage.stageHeight)
             {
-                _screenProxy.bitmapData = new BitmapData(context.mainStage.stageWidth, context.mainStage.stageHeight, false, context.mainStage.opaqueBackground as int);
+                _screenProxy.bitmapData = new BitmapData(game.mainStage.stageWidth, game.mainStage.stageHeight, false, game.mainStage.opaqueBackground as int);
             }
             else
             {
                 // Make sure to clear it so we don't get accumulation.
-                _screenProxy.bitmapData.fillRect(_screenProxy.bitmapData.rect, context.mainStage.opaqueBackground as int);
+                _screenProxy.bitmapData.fillRect(_screenProxy.bitmapData.rect, game.mainStage.opaqueBackground as int);
             }
             
             // Ok, draw the screen to it.

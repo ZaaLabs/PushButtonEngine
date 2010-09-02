@@ -31,6 +31,9 @@ package com.pblabs.engine.core
         
         private var _versionDetails:VersionDetails;
         
+        [Inject]
+        public var game:PBGame;
+        
         public function PBContextBase(_name:String = null):void
         {
             if (!name)
@@ -61,7 +64,7 @@ package com.pblabs.engine.core
             _currentGroup = _rootGroup = rg;
             
             // Allow injection on main class and ourselves, too.
-            inject(this);
+            injectInto(this);
             
             Console.registerContext(this);
         }
@@ -95,12 +98,15 @@ package com.pblabs.engine.core
             _managers[clazz + "|" + optionalName] = instance;
         }
         
-        public function getManager(clazz:Class, optionalName:String = null):*
+        public function getManager(clazz:Class, optionalName:String = ""):*
         {
-            return _managers[clazz + "|" + optionalName];
+            var m:* = _managers[clazz + "|" + optionalName];
+            if(!m)
+                m = game.getManager(clazz, optionalName);
+            return m;
         }
         
-        public function inject(instance:*):void
+        public function injectInto(instance:*):void
         {
         }
         

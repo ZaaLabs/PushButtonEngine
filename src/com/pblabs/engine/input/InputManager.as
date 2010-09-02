@@ -11,6 +11,8 @@ package com.pblabs.engine.input
 
     import com.pblabs.engine.core.IPBContext;
     import com.pblabs.engine.core.IPBManager;
+    import com.pblabs.engine.core.PBGame;
+    import com.pblabs.engine.time.IProcessManager;
     import com.pblabs.engine.time.ITickedObject;
     import com.pblabs.engine.time.ProcessManager;
     
@@ -33,21 +35,21 @@ package com.pblabs.engine.input
     public class InputManager extends EventDispatcher implements ITickedObject, IPBManager
     {
 		[Inject]
-		public var context:IPBContext;
+		public var game:PBGame;
         
         [Inject]
-        public var processManager:ProcessManager;
+        public var processManager:IProcessManager;
 		
         public function startup():void
         {
-			context.mainStage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
-			context.mainStage.addEventListener(KeyboardEvent.KEY_UP,   onKeyUp);
-			context.mainStage.addEventListener(MouseEvent.MOUSE_DOWN,  onMouseDown);
-			context.mainStage.addEventListener(MouseEvent.MOUSE_UP,    onMouseUp);
-			context.mainStage.addEventListener(MouseEvent.MOUSE_MOVE,  onMouseMove);
-			context.mainStage.addEventListener(MouseEvent.MOUSE_WHEEL, onMouseWheel);
-			context.mainStage.addEventListener(MouseEvent.MOUSE_OVER,  onMouseOver);
-			context.mainStage.addEventListener(MouseEvent.MOUSE_OUT,   onMouseOut);
+			game.mainStage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
+            game.mainStage.addEventListener(KeyboardEvent.KEY_UP,   onKeyUp);
+            game.mainStage.addEventListener(MouseEvent.MOUSE_DOWN,  onMouseDown);
+            game.mainStage.addEventListener(MouseEvent.MOUSE_UP,    onMouseUp);
+            game.mainStage.addEventListener(MouseEvent.MOUSE_MOVE,  onMouseMove);
+            game.mainStage.addEventListener(MouseEvent.MOUSE_WHEEL, onMouseWheel);
+            game.mainStage.addEventListener(MouseEvent.MOUSE_OVER,  onMouseOver);
+            game.mainStage.addEventListener(MouseEvent.MOUSE_OUT,   onMouseOut);
             
             // Add ourselves with the highest priority, so that our update happens at the beginning of the next tick.
             // This will keep objects processing afterwards as up-to-date as possible when using keyJustPressed() or keyJustReleased()

@@ -229,7 +229,7 @@ package com.pblabs.engine.debug
                 if (!_stats)
                 {
                     _stats = new Stats();
-                    currentContext.inject(_stats);
+                    currentContext.injectInto(_stats);
                     currentContext.mainStage.addChild(_stats);
                     Logger.print(Console, "Enabled FPS display.");
                 }

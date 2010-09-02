@@ -8,7 +8,7 @@
  ******************************************************************************/
 package com.pblabs.sound
 {
-
+    
     import com.pblabs.engine.core.IPBContext;
     import com.pblabs.engine.debug.Logger;
     import com.pblabs.engine.debug.Profiler;
@@ -30,17 +30,14 @@ package com.pblabs.sound
      */
     public class SoundManager implements ISoundManager, ITickedObject
     {
-		[Inject]
-		public var context:IPBContext;
-		
         [Inject]
         public var resourceManager:ResourceManager;
-
+        
         public static const MUSIC_MIXER_CATEGORY:String = "music";
         public static const SFX_MIXER_CATEGORY:String = "sfx";
         
         public var maxConcurrentSounds:int = 5;
-
+        
         protected var playingSounds:Array = [];
         protected var categories:Object = {};
         protected var rootCategory:SoundCategory = new SoundCategory();
@@ -100,21 +97,21 @@ package com.pblabs.sound
             
             // Great, so set up the SoundHandle, start it, and return it.
             var sh:SoundHandle = new SoundHandle(this, actualSound, category, pan, loopCount, startDelay);            
-
+            
             // Look up its category.
             var categoryRef:SoundCategory = categories[category] as SoundCategory;
             
             // Apply the category's transform to avoid transitory sound issues.
             if(categoryRef)
                 sh.transform = SoundCategory.applyCategoriesToTransform(categoryRef.muted, sh.pan, sh.volume, categoryRef);            
-
+            
             // Add to the list of playing sounds.
             playingSounds.push(sh);
             
             Profiler.exit("SoundManager.play");
             return sh;
         }
-
+        
         public function stream(url:String, category:String = "sfx", pan:Number = 0.0, loopCount:int = 1, startDelay:Number = 0.0):SoundHandle
         {
             // Create a Sound from the URL.
@@ -215,12 +212,12 @@ package com.pblabs.sound
             {
                 if((playingSounds[i] as SoundHandle).category != category)
                     continue;
-
+                
                 (playingSounds[i] as SoundHandle).stop();
                 i--;
             }
         }
-
+        
         public function stopAll():void
         {
             while(playingSounds.length)
@@ -241,7 +238,7 @@ package com.pblabs.sound
         internal function updateSounds():void
         {
             Profiler.enter("SoundManager.updateSounds");
-
+            
             // Push dirty state down.
             if(!rootCategory.dirty)
             {
@@ -256,13 +253,13 @@ package com.pblabs.sound
                     for(var j:int=0; j<playingSounds.length; j++)
                     {
                         var csh:SoundHandle = playingSounds[j] as SoundHandle;
-
+                        
                         if(csh.category != categoryName)
                             continue;
                         
                         csh.dirty = true;
                     }
-
+                    
                     // Clean the state.
                     categories[categoryName].dirty = false;
                 }
@@ -310,7 +307,7 @@ package com.pblabs.sound
             var idx:int = playingSounds.indexOf(sh);
             return idx != -1;
         }
-
+        
         internal function removeSoundHandle(sh:SoundHandle):void
         {
             var idx:int = playingSounds.indexOf(sh);

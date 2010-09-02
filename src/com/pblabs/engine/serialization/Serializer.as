@@ -13,9 +13,9 @@ package com.pblabs.engine.serialization
     import com.pblabs.engine.core.IPBContext;
     import com.pblabs.engine.debug.Logger;
     
-     import flash.geom.Point;
+    import flash.geom.Point;
     import flash.utils.Dictionary;
-     import flash.utils.getQualifiedClassName;
+    import flash.utils.getQualifiedClassName;
     
     /**
      * Singleton class for serializing and deserializing objects. This class 
@@ -27,15 +27,12 @@ package com.pblabs.engine.serialization
      */
     public class Serializer
     {
-        [Inject]
-        public var context:IPBContext;
-        
         public function Serializer()
         {
             // initialize our default Serializers. Note "special" cases get a double
             // colon so there can be no overlap w/ any real type.
             _deserializers["::DefaultSimple"] = deserializeSimple;
-            _deserializers["::DefaultComplex"] = dserializeComplex;
+            _deserializers["::DefaultComplex"] = deserializeComplex;
             _deserializers["Boolean"] = deserializeBoolean;
             _deserializers["Array"] = deserializeDictionary;
             _deserializers["flash.utils::Dictionary"] = deserializeDictionary;
@@ -103,7 +100,7 @@ package com.pblabs.engine.serialization
          * Code that calls this method should always use the return value rather than
          * the passed in value for this reason.
          */
-        public function deserialize(object:*, xml:XML, typeHint:String=null):*
+        public function deserialize(context:IPBContext, object:*, xml:XML, typeHint:String=null):*
         {
             // Dispatch our special cases - entities and ISerializables.
             if (object is ISerializable)
@@ -123,7 +120,7 @@ package com.pblabs.engine.serialization
             if (!_deserializers[typeName])
                 typeName = xml.hasSimpleContent() ? "::DefaultSimple" : "::DefaultComplex";
             
-            return _deserializers[typeName](object, xml, typeHint);
+            return _deserializers[typeName](context, object, xml, typeHint);
         }
         
         /**
@@ -183,7 +180,7 @@ package com.pblabs.engine.serialization
             return false;
         }
         
-        private function deserializeSimple(object:*, xml:XML, typeHint:String):*
+        private function deserializeSimple(context:IPBContext, object:*, xml:XML, typeHint:String):*
         {
             // If the tag is empty and we're not a string where """ is a valid value,
             // just return that value.
@@ -198,7 +195,7 @@ package com.pblabs.engine.serialization
             xml.appendChild(object.toString());
         }
         
-        private function dserializeComplex(object:*, xml:XML, typeHint:String):*
+        private function deserializeComplex(context:IPBContext, object:*, xml:XML, typeHint:String):*
         {
             var isDynamic:Boolean = (object is Array) || (object is Dictionary) || (TypeUtility.isDynamic(object));
             var xmlPath:String = '';            
@@ -250,14 +247,15 @@ package com.pblabs.engine.serialization
                     typeName = "String";
                 
                 // deserialize into the child.
-                if (!getChildReference(object, fieldName, fieldXML) && !getResourceObject(object, fieldName, fieldXML))
+                if (!getChildReference(context, object, fieldName, fieldXML) 
+                    && !getResourceObject(context, object, fieldName, fieldXML))
                 {
                     var child:* = getChildObject(object, fieldName, typeName, fieldXML);
                     if (child != null)
                     {
                         // Deal with typehints.
                         var childTypeHint:String = TypeUtility.getTypeHint(object, fieldName);
-                        child = deserialize(child, fieldXML, childTypeHint);
+                        child = deserialize(context, child, fieldXML, childTypeHint);
                     }
                     
                     // Assign the new value.
@@ -341,7 +339,7 @@ package com.pblabs.engine.serialization
             for each(var field:XML in classDescription.child("variable"))
             {
                 var fieldName:String = field.@name;
-
+                
                 // Only serialize variables, that aren't null
                 if(object[fieldName] != null)
                 {
@@ -358,7 +356,7 @@ package com.pblabs.engine.serialization
         {
             var propertyXML:XML = <{propertyName}/>;
             var data:XML = TypeUtility.getEditorData(object, propertyName);
-
+            
             // Deal with "dynamic" typehints.
             var typeHint:String = TypeUtility.getTypeHint(object, propertyName);
             if(typeHint && typeHint == "dynamic")
@@ -380,7 +378,7 @@ package com.pblabs.engine.serialization
             //var ignore:XMLList = data ? data.arg.(@key == "ignore") : null;
             //if (ignore && ignore.@value.toString() == "true")
             //   return null;
-
+            
             // If this field is set to ignore, then ignore it
             if(data)
             {
@@ -388,14 +386,14 @@ package com.pblabs.engine.serialization
                 if(ignore && ignore.@value.toString() == "true")
                     return null;
             }
-
-
+            
+            
             // Either make a reference or try to serialize
             if (!setChildReference(object, object[propertyName], propertyXML))
             {
                 // OK, we do need to serialize
                 serialize(object[propertyName], propertyXML);
-
+                
                 // If the value is the same as the defaultValue, ignore it
                 // TODO: Handle simple arrays or structures like Points
                 var defaultValue:XMLList = data ? data.arg.(@key == "defaultValue") : null;
@@ -406,7 +404,7 @@ package com.pblabs.engine.serialization
             return propertyXML;
         }
         
-        private function deserializeBoolean(object:*, xml:XML, typeHint:String):*
+        private function deserializeBoolean(context:IPBContext, object:*, xml:XML, typeHint:String):*
         {
             return (xml.toString() == "true")
         }
@@ -419,7 +417,7 @@ package com.pblabs.engine.serialization
                 xml.appendChild("false");
         }
         
-        private function deserializeDictionary(object:*, xml:XML, typeHint:String):*
+        private function deserializeDictionary(context:IPBContext, object:*, xml:XML, typeHint:String):*
         {
             for each (var childXML:XML in xml.*)
             {
@@ -447,11 +445,12 @@ package com.pblabs.engine.serialization
                     typeName = typeHint ? typeHint : "String";
                 
                 // deserialize the value.
-                if (!getChildReference(object, key, childXML) && !getResourceObject(object, key, childXML, typeHint))
+                if (getChildReference(context, object, key, childXML) 
+                    || getResourceObject(context, object, key, childXML, typeHint))
                 {
                     var value:* = getChildObject(object, key, typeName, childXML);
                     if (value != null)
-                        value = deserialize(value, childXML);
+                        value = deserialize(context, value, childXML);
                     
                     // Assign, either to key or to end of array.
                     if (key.length > 0)
@@ -468,7 +467,7 @@ package com.pblabs.engine.serialization
         {
             if (object == null)
                 return;
-
+            
             // Decide if they all share the same type
             var hasType : Boolean = true;
             var anyChild : * = null;
@@ -482,11 +481,11 @@ package com.pblabs.engine.serialization
             // If it's empty, we're done
             if (anyChild == null)
                 return;
-
+            
             // Assign child type, if any
             if (hasType)
                 xml.@childType = TypeUtility.getObjectClassName(anyChild).replace(/::/,".");
-
+            
             // Now write all children
             for (var element : * in object)
             {
@@ -494,20 +493,20 @@ package com.pblabs.engine.serialization
                 var propertyName : String = (object is Dictionary) ? element : "_";
                 var propertyValue : * = object[element];
                 var propertyXML:XML = <{propertyName}/>;
-
+                
                 // Write type
                 if (!hasType)
                     propertyXML.@type = TypeUtility.getObjectClassName(propertyValue).replace(/::/,".");
-
+                
                 // Write non-entities, or reference entities
                 if (!setChildReference(object, propertyValue, propertyXML))
                     serialize(propertyValue, propertyXML);
-
+                
                 // Save
                 xml.appendChild(propertyXML);
             }
         }
-
+        
         private function deserializeClass(object:*, xml:XML, typeHint:String):*
         {
             return TypeUtility.getClassFromName(xml.toString());
@@ -517,7 +516,7 @@ package com.pblabs.engine.serialization
          * A tag can have attributes which encode references of various types. This method
          * parses them and resolves the references.
          */ 
-        private function getChildReference(object:*, fieldName:String, xml:XML):Boolean
+        private function getChildReference(context:IPBContext, object:*, fieldName:String, xml:XML):Boolean
         {
             var nameReference:String = xml.attribute("nameReference");
             var componentReference:String = xml.attribute("componentReference");
@@ -547,7 +546,7 @@ package com.pblabs.engine.serialization
             
             return false;
         }
-
+        
         /**
          * A tag can have attributes which encode references of various types. This method
          * parses them and resolves the references.
@@ -606,7 +605,7 @@ package com.pblabs.engine.serialization
             return childObject;
         }
         
-        private function getResourceObject(object:*, fieldName:String, xml:XML, typeHint:String = null):Boolean
+        private function getResourceObject(context:IPBContext, object:*, fieldName:String, xml:XML, typeHint:String = null):Boolean
         {
             var filename:String = xml.attribute("filename");
             
@@ -700,7 +699,7 @@ internal class ResourceNote
         Logger.error(owner, "set " + fieldName, "No resource was found with filename " + resource.filename + ".");
         context.getManager(Serializer).removeResource(resource.filename);
     }
-
+    
 }
 
 internal class ReferenceNote

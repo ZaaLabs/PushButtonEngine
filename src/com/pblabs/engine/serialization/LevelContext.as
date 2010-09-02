@@ -43,7 +43,7 @@ package com.pblabs.engine.serialization
         protected function onLevelLoaded(e:*):void
         {
             // Instantiate the default group.
-            templateManager.instantiateGroup(_group);
+            templateManager.instantiateGroup(this, _group);
         }
         
         public override function shutdown():void

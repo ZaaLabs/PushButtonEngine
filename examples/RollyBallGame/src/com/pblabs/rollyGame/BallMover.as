@@ -15,6 +15,7 @@ package com.pblabs.rollyGame
     import com.pblabs.engine.resource.*;
     import com.pblabs.engine.serialization.TemplateManager;
     import com.pblabs.rendering2D.*;
+    import com.pblabs.sound.ISoundManager;
     import com.pblabs.sound.SoundManager;
     
     import flash.geom.*;
@@ -26,7 +27,7 @@ package com.pblabs.rollyGame
     public class BallMover extends SimpleSpatialComponent
     {
         [Inject]
-        public var soundManager:SoundManager;
+        public var soundManager:ISoundManager;
         
         [Inject]
         public var inputManager:InputManager;
@@ -110,7 +111,7 @@ package com.pblabs.rollyGame
                     soundManager.play(PickupSound);
                 
                 // Spawn a new coin somewhere.
-                templateManager.makeEntity("Coin", 
+                templateManager.makeEntity(context, "Coin", 
                     {
                         "@Spatial.position": new Point(20 + Math.random() * 600, 20 + Math.random() * 400) 
                     });

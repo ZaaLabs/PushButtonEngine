@@ -4,7 +4,6 @@ package com.pblabs.engine.core
     import com.pblabs.engine.input.InputManager;
     import com.pblabs.engine.resource.Resource;
     import com.pblabs.engine.resource.ResourceManager;
-    import com.pblabs.engine.serialization.LevelManager;
     import com.pblabs.engine.serialization.Serializer;
     import com.pblabs.engine.serialization.TemplateManager;
     import com.pblabs.engine.time.IProcessManager;
@@ -38,7 +37,7 @@ package com.pblabs.engine.core
 
         function allocate(type:Class):*;
         function allocateEntity():IEntity;
-		function inject(instance:*):void;
+		function injectInto(instance:*):void;
 		
         function get mainClass():*;
         function findChild(childName:String):DisplayObject;
