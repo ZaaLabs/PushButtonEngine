@@ -28,8 +28,33 @@ package com.pblabs.engine.core
      * us to pool Entities at a later date if needed and do other tricks. Please
      * program against IEntity, not Entity, to avoid dependencies.</p>
      */
-	internal class Entity extends PBObject implements IEntity
-    {      
+	internal class Entity extends PBObject implements IEntity, IEventDispatcher
+    {
+        public function addEventListener(type:String, listener:Function, useCapture:Boolean=false, priority:int=0, useWeakReference:Boolean=false):void
+        {
+            eventDispatcher.addEventListener(type, listener, useCapture, priority, useWeakReference);
+        }
+        
+        public function removeEventListener(type:String, listener:Function, useCapture:Boolean=false):void
+        {
+            eventDispatcher.removeEventListener(type, listener, useCapture);
+        }
+        
+        public function dispatchEvent(event:Event):Boolean
+        {
+            return eventDispatcher.dispatchEvent(event);
+        }
+        
+        public function hasEventListener(type:String):Boolean
+        {
+            return eventDispatcher.hasEventListener(type);
+        }
+        
+        public function willTrigger(type:String):Boolean
+        {
+            return eventDispatcher.willTrigger(type);
+        }            
+        
         public function get deferring():Boolean
         {
             return _deferring;
@@ -60,6 +85,10 @@ package com.pblabs.engine.core
         
         public function get eventDispatcher():IEventDispatcher
         {
+            // Set up an event dispatcher with this as target.
+            if(!_eventDispatcher)
+                _eventDispatcher = new EventDispatcher(this);
+            
             return _eventDispatcher;
         }
         
@@ -609,7 +638,7 @@ package com.pblabs.engine.core
         protected var _components:Dictionary = new Dictionary();
         protected var _tempPropertyInfo:PropertyInfo = new PropertyInfo();
         protected var _deferredComponents:Array = new Array();
-        protected var _eventDispatcher:EventDispatcher = new EventDispatcher();
+        protected var _eventDispatcher:EventDispatcher;
     }
 }
 
