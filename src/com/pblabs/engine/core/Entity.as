@@ -104,8 +104,8 @@ package com.pblabs.engine.core
         public override function destroy():void
         {
             // Give listeners a chance to act before we start destroying stuff.
-            if(_eventDispatcher.hasEventListener("EntityDestroyed"))
-                _eventDispatcher.dispatchEvent(new Event("EntityDestroyed"));
+            if(eventDispatcher.hasEventListener("EntityDestroyed"))
+                eventDispatcher.dispatchEvent(new Event("EntityDestroyed"));
             
             // Unregister our components.
             for each(var component:IEntityComponent in _components)

@@ -51,9 +51,6 @@ package com.pblabs.screens
      */
     public class ScreenManager implements IAnimatedObject, ITickedObject, IPBManager
     {
-//        [Inject]
-//        public var context:IPBContext;
-        
         [Inject]
         public var game:PBGame;
         

@@ -105,12 +105,6 @@
 			<objectMask>
 				<_>Renderable</_>
 			</objectMask>
-			<Input childType="com.pblabs.engine.core.InputKey">
-				<GoLeft>LEFT</GoLeft>
-				<GoRight>RIGHT</GoRight>
-				<GoUp>UP</GoUp>
-				<GoDown>DOWN</GoDown>
-			</Input>
 		</component>
 	</template>
 
@@ -202,6 +196,7 @@
 	</entity>
 
 	<group name="Level1">
+	   <groupReference name="Everything"/>
 		<objectReference name="Level1Map" />
 		<objectReference name="Player1" />
 		<objectReference name="Coin" />
@@ -220,6 +215,7 @@
 	</entity>
 
 	<group name="Level2">
+       <groupReference name="Everything"/>
 		<objectReference name="Level2Map" />
 		<objectReference name="BasePlayer" />
         <objectReference name="Coin" />
