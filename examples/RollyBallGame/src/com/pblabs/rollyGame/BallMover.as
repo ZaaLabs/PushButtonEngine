@@ -63,6 +63,7 @@ package com.pblabs.rollyGame
             
             // Sample the map for our current position.
             var n:Point = tmpPoint;
+            n.x = 0; n.y = 0;
             if(map)
                 height = map.getNormalAndHeight(position.x, position.y, n);
             

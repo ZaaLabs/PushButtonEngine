@@ -52,7 +52,7 @@ package com.pblabs.engine.serialization
         
         [Inject]
         public var resourceManager:ResourceManager;
-
+        
         /**
          * Defines the event to dispatch when a level file is successfully loaded.
          */

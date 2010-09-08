@@ -50,7 +50,7 @@ package
             {
                 1: "level1",
                 2: "level2"
-            }
+            };
         
         public function RollyBallGame()
         {
