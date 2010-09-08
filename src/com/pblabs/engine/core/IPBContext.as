@@ -28,7 +28,7 @@ package com.pblabs.engine.core
 		
         function get started():Boolean;
         
-        function registerManager(clazz:Class, instance:Object = null, optionalName:String = null):void;
+        function registerManager(clazz:Class, instance:Object = null, optionalName:String = null, suppressInject:Boolean = false):void;
         function getManager(clazz:Class, optionalName:String = null):*;
         
         function get rootGroup():PBGroup;

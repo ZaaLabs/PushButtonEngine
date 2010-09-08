@@ -17,7 +17,7 @@ package com.pblabs.rollyGame
      */
     public class BallShadowRenderer extends DisplayObjectRenderer
     {
-        public var Map:NormalMap;
+        public var map:NormalMap;
         
         public function BallShadowRenderer()
         {
@@ -30,7 +30,7 @@ package com.pblabs.rollyGame
         {
 			super.onFrame(dt);
 			
-            if(!Map)
+            if(!map)
                 throw new Error("No normalmap specified!");
             
             // Calculate roller shadow.
@@ -53,9 +53,9 @@ package com.pblabs.rollyGame
                 var cosVal:Number = Math.cos((i/24) * Math.PI * 2);
                 
                 // Determine point on the circle's silhouette.
-                silhouetteX = sinVal * ball.Radius; 
-                silhouetteY = cosVal * ball.Radius;
-                silhouetteZ = ball.Height * 100 + 16;
+                silhouetteX = sinVal * ball.radius; 
+                silhouetteY = cosVal * ball.radius;
+                silhouetteZ = ball.height * 100 + 16;
                 
                 var normalX:Number = sinVal;
                 var normalY:Number = cosVal;
@@ -89,7 +89,7 @@ package com.pblabs.rollyGame
                     silhouetteY += deltaY;
                     silhouetteZ += deltaZ;
                     
-                    if(silhouetteZ <= Map.getHeight(silhouetteX + ball.position.x, silhouetteY + ball.position.y) * 100)
+                    if(silhouetteZ <= map.getHeight(silhouetteX + ball.position.x, silhouetteY + ball.position.y) * 100)
                         break;
                 }
                 

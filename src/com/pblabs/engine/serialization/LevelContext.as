@@ -1,6 +1,8 @@
 package com.pblabs.engine.serialization
 {
     import com.pblabs.engine.core.PBContext;
+    import com.pblabs.engine.time.IProcessManager;
+    import com.pblabs.engine.time.ProcessManager;
     
     /**
      * Context which loads itself from a level XML file.
@@ -12,6 +14,9 @@ package com.pblabs.engine.serialization
         
         [Inject]
         public var templateManager:TemplateManager;
+        
+        [Inject]
+        public var processManager:IProcessManager;
         
         public function LevelContext(name:String, levelUrl:String, group:String = null)
         {
@@ -36,6 +41,10 @@ package com.pblabs.engine.serialization
         {
             super.startup();
             
+            // Pause the game until the level is loaded.
+            processManager.timeScale = 0;
+            
+            // Load the level.
             templateManager.addEventListener(TemplateManager.LOADED_EVENT, onLevelLoaded);
             templateManager.loadFile(_levelUrl);
         }
@@ -44,6 +53,10 @@ package com.pblabs.engine.serialization
         {
             // Instantiate the default group.
             templateManager.instantiateGroup(this, _group);
+
+            // And resume time.
+            processManager.timeScale = 1;
+        
         }
         
         public override function shutdown():void

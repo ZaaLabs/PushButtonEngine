@@ -9,13 +9,6 @@
 	-->
 <things version="1">
 
-	<entity name="BallSheet">
-		<component type="com.pblabs.rendering2D.spritesheet.SpriteSheetComponent"
-			name="SpriteSheet">
-			<image filename="../assets/Images/ball.png" />
-		</component>
-	</entity>
-
 	<entity name="CoinSheet">
 		<component type="com.pblabs.rendering2D.spritesheet.SpriteSheetComponent"
 			name="SpriteSheet">
@@ -78,25 +71,25 @@
             <scene entityName="Scene" componentName="Scene"/>
 			<layerIndex>2</layerIndex>
 			<positionProperty>@Spatial.position</positionProperty>
-			<sizeReference>@Spatial.BallScale</sizeReference>
+			<sizeReference>@Spatial.ballScale</sizeReference>
 		</component>
 		<component type="com.pblabs.rollyGame.BallShadowRenderer"
 			name="Shadow">
             <scene entityName="Scene" componentName="Scene"/>
-			<Map entityName="LevelMap" />
+			<map entityName="LevelMap" />
 			<layerIndex>1</layerIndex>
 			<positionProperty>@Spatial.position</positionProperty>
 		</component>
 		<component type="com.pblabs.rollyGame.BallMover" name="Spatial">
-			<Map entityName="LevelMap" />
+			<map entityName="LevelMap" />
 			<position>
 				<x>320</x>
 				<y>240</y>
 			</position>
-			<PickupSound>../assets/Sounds/pickup.mp3</PickupSound>
-			<PickupType>
+			<pickupSound>../assets/Sounds/pickup.mp3</pickupSound>
+			<pickupType>
 				<_>Coin</_>
-			</PickupType>
+			</pickupType>
 			<spatialManager entityName="SpatialDB" />
 			<size>
 				<x>32</x>
@@ -136,7 +129,6 @@
 
 	<group name="Everything">
 		<objectReference name="CoinSheet" />
-		<objectReference name="BallSheet" />
 		<objectReference name="WelcomeSheet" />
 		<objectReference name="SpatialDB" />
 		<objectReference name="Scene" />

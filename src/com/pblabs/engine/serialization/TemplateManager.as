@@ -47,9 +47,6 @@ package com.pblabs.engine.serialization
      */
     public class TemplateManager extends EventDispatcher
     {
-        //[Inject]
-        //public var context:IPBContext;
-        
         [Inject]
         public var serializer:Serializer;
         

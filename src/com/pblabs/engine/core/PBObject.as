@@ -22,9 +22,9 @@ package com.pblabs.engine.core
         protected var _name:String, _alias:String;
         protected var _owningGroup:PBGroup;
         protected var _sets:Array;
-		protected var _context:PBContextBase;
+		protected var _context:PBContext;
         
-		internal function setContext(c:PBContextBase):void
+		internal function setContext(c:PBContext):void
 		{
 			if(_context)
 				throw new Error("Trying to set context on a PBObject that already has one!");

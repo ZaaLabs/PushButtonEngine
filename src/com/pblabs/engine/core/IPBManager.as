@@ -1,8 +1,8 @@
 package com.pblabs.engine.core
 {
-	public interface IPBManager
-	{
-		function startup():void;
-		function shutdown():void;		
-	}
+    public interface IPBManager
+    {
+        function startup():void;
+        function shutdown():void;
+    }
 }

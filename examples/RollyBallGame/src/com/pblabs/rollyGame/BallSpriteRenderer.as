@@ -19,8 +19,7 @@ package com.pblabs.rollyGame
      */
     public class BallSpriteRenderer extends DisplayObjectRenderer
     {
-        private var _BallChecker:BitmapData;
-        private var _SphereFilter:DisplacementMapFilter;
+        private var _ballChecker:BitmapData;
         public var sizeReference:PropertyReference;
         
         public function BallSpriteRenderer()
@@ -28,8 +27,8 @@ package com.pblabs.rollyGame
             super();
             
             // Generate the ball texture.
-            _BallChecker = new BitmapData(64, 64, false);
-            _BallChecker.perlinNoise(9, 10, 9, 0x48844, true, true);
+            _ballChecker = new BitmapData(64, 64, false);
+            _ballChecker.perlinNoise(9, 10, 9, 0x48844, true, true);
             
             displayObject = new Sprite();
         }
@@ -55,7 +54,7 @@ package com.pblabs.rollyGame
             // Draw the ball. We actually skip any distortion, panning is good 
             // enough to fool the eye at small size.            
             spriteAsSprite.graphics.clear();
-            spriteAsSprite.graphics.beginBitmapFill(_BallChecker, new Matrix(32 / 32, 0, 0, 32 / 32, pos.x, pos.y), true, true);
+            spriteAsSprite.graphics.beginBitmapFill(_ballChecker, new Matrix(32 / 32, 0, 0, 32 / 32, pos.x, pos.y), true, true);
             spriteAsSprite.graphics.drawCircle(0, 0, scaleFactor / 2);
             spriteAsSprite.graphics.endFill();
         }

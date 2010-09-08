@@ -24,9 +24,6 @@ package
         public var currentTime:int = levelDuration;
         public var currentScore:int = 0;
         
-        [Inject]
-        public var processManager:IProcessManager;
-        
         public function RollyBallGameLevelContext(name:String, levelUrl:String, group:String)
         {
             super(name, levelUrl, group);
@@ -104,7 +101,7 @@ package
         public function onTick(delta:Number) : void
         {
             // Deal with timing logic.
-            if(currentTime <= 0 && processManager.isTicking)
+            if(currentTime <= 0 && startTime != 0 && processManager.isTicking)
             {
                 // Stop playing!
                 processManager.stop();

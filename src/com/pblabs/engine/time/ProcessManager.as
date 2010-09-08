@@ -15,6 +15,7 @@ package com.pblabs.engine.time
 	import com.pblabs.engine.core.IPBContext;
 	import com.pblabs.engine.core.PBGame;
 	import com.pblabs.engine.debug.*;
+	import com.pblabs.engine.pb_internal;
 	import com.pblabs.engine.serialization.TypeUtility;
 	import com.pblabs.engine.util.IPrioritizable;
 	import com.pblabs.engine.util.SimplePriorityQueue;
@@ -25,6 +26,8 @@ package com.pblabs.engine.time
 	import flash.utils.Timer;
 	import flash.utils.getQualifiedClassName;
 	import flash.utils.getTimer;
+    
+    use namespace pb_internal;
 	
 	/**
 	 * The process manager manages all time related functionality in the engine.
@@ -81,6 +84,8 @@ package com.pblabs.engine.time
 		 */
 		public const MAX_TICKS_PER_FRAME:int = 5;
 		
+        pb_internal var timer:Timer;
+
 		/**
 		 * The scale at which time advances. If this is set to 2, the game
 		 * will play twice as fast. A value of 0.5 will run the
@@ -178,8 +183,6 @@ package com.pblabs.engine.time
             
             Logger.print(this, "Started at " + game.mainStage.frameRate + "Hz");
 		}
-		
-		public var timer:Timer;
 		
 		/**
 		 * Stops the process manager. This is automatically called when the last object

@@ -25,6 +25,7 @@ package com.pblabs.engine.debug
 {
     import com.pblabs.engine.PBE;
     import com.pblabs.engine.core.IPBContext;
+    import com.pblabs.engine.pb_internal;
     import com.pblabs.engine.time.ProcessManager;
     
     import flash.display.Bitmap;
@@ -40,6 +41,8 @@ package com.pblabs.engine.debug
     import flash.text.TextFormat;
     import flash.utils.getTimer;
     
+    use namespace pb_internal;
+
     public class Stats extends Sprite
     {
         public function Stats()
