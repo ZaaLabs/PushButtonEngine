@@ -26,7 +26,7 @@ package
     import flash.events.EventDispatcher;
     import flash.utils.Dictionary;
     
-    [SWF(width="640", height="480", frameRate="60", backgroundColor="0x000000")]
+    [SWF(width="640", height="480", frameRate="30", backgroundColor="0x000000")]
     public class RollyBallGame extends Sprite
     {
         public static var game:PBGame = new PBGame();

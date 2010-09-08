@@ -6,6 +6,7 @@ package
     import com.pblabs.rendering2D.ui.PBButton;
     import com.pblabs.rendering2D.ui.PBLabel;
     import com.pblabs.screens.ScreenManager;
+    import com.pblabs.sound.ISoundManager;
     import com.pblabs.sound.SoundManager;
     
     import flash.display.*;
@@ -21,13 +22,13 @@ package
         public var gameBus:EventDispatcher;
         
         [Inject]
-        public var soundManager:SoundManager;
+        public var soundManager:ISoundManager;
         
         public var lblScore:PBLabel = new PBLabel();
         public var btnContinue:PBButton = new PBButton();
         public var btnRetry:PBButton = new PBButton();
         
-        public var CoinsLeft:int, TotalScore:int;
+        public var coinsLeft:int, totalScore:int;
         
         public function Scoreboard()
         {
@@ -52,44 +53,44 @@ package
             btnRetry.color = 0xFF0000;
             btnRetry.refresh();
             
-            btnContinue.addEventListener(MouseEvent.CLICK, _OnNextClick);
-            btnRetry.addEventListener(MouseEvent.CLICK, _OnRetryClick);            
+            btnContinue.addEventListener(MouseEvent.CLICK, _onNextClick);
+            btnRetry.addEventListener(MouseEvent.CLICK, _onRetryClick);            
         }
         
-        public function StartReport(numCoins:int):void
+        public function startReport(numCoins:int):void
         {
-            CoinsLeft = numCoins;
-            TotalScore = 0;
+            coinsLeft = numCoins;
+            totalScore = 0;
             
             lblScore.caption = "Total Score: ";
             lblScore.refresh();
             
-            setTimeout(_DoNextCoin, 500);
+            setTimeout(_doNextCoin, 500);
         }
         
-        private function _DoNextCoin():void
+        private function _doNextCoin():void
         {
-            if(CoinsLeft <= 0)
+            if(coinsLeft <= 0)
                 return;
             
             // Play a pleasing chunk noise when score goes up.
             soundManager.play("../assets/Sounds/scorechunk.mp3");
             
             // Update our state.
-            CoinsLeft--;
-            TotalScore += 1000;
-            lblScore.caption = "Total Score: " + TotalScore;
+            coinsLeft--;
+            totalScore += 1000;
+            lblScore.caption = "Total Score: " + totalScore;
             lblScore.refresh();
-            setTimeout(_DoNextCoin, Math.min(1000 / CoinsLeft, 250));
+            setTimeout(_doNextCoin, Math.min(1000 / coinsLeft, 250));
         }
         
-        private function _OnRetryClick(e:Event):void
+        private function _onRetryClick(e:Event):void
         {
             gameBus.dispatchEvent(new Event(RollyBallGame.RESET_LEVEL_EVENT));
             parent.removeChild(this);
         }
         
-        private function _OnNextClick(e:Event):void
+        private function _onNextClick(e:Event):void
         {
             gameBus.dispatchEvent(new Event(RollyBallGame.NEXT_LEVEL_EVENT));
             parent.removeChild(this);

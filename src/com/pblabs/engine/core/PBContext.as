@@ -96,6 +96,7 @@ package com.pblabs.engine.core
             // Tear down the simulation.
             _currentGroup = null;
             rootGroup.destroy();
+            _rootGroup = null;
             
             Console.unregisterContext(this);            
         }

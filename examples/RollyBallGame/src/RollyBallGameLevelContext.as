@@ -1,5 +1,9 @@
 package
 {
+    import com.pblabs.animation.Animator;
+    import com.pblabs.animation.AnimatorComponent;
+    import com.pblabs.engine.debug.Logger;
+    import com.pblabs.engine.input.InputManager;
     import com.pblabs.engine.serialization.LevelContext;
     import com.pblabs.engine.time.IAnimatedObject;
     import com.pblabs.engine.time.IProcessManager;
@@ -14,15 +18,20 @@ package
     
     public class RollyBallGameLevelContext extends LevelContext implements IAnimatedObject, ITickedObject
     {
+        [Inject]
+        public var inputManager:InputManager;
+        
         public var sceneView:SceneView = new SceneView();
         public var lblTime:PBLabel = new PBLabel();
         public var lblScore:PBLabel = new PBLabel();
         
         // State of this level.
         public var startTime:int = 0;
-        public var levelDuration:int = 45000;
+        public var levelDuration:int = 3000;
         public var currentTime:int = levelDuration;
         public var currentScore:int = 0;
+        
+        public var fadedWelcomeScreen:Boolean = false;
         
         public function RollyBallGameLevelContext(name:String, levelUrl:String, group:String)
         {
@@ -100,16 +109,25 @@ package
          */
         public function onTick(delta:Number) : void
         {
+            // Hide the intro screen.
+            if(inputManager.isAnyKeyDown() && !fadedWelcomeScreen)
+            {
+                fadedWelcomeScreen = true;
+                Logger.print(this, "Playing thing.");
+                var a:AnimatorComponent = lookupComponent("WelcomeScreen", "FadeAnimator") as AnimatorComponent;
+                a.play("FadeOut");
+            }
+            
             // Deal with timing logic.
-            if(currentTime <= 0 && startTime != 0 && processManager.isTicking)
+            if(currentTime < 0 && processManager.isTicking)
             {
                 // Stop playing!
                 processManager.stop();
                 
                 // Kick off the scoreboard.
-                var sb:Scoreboard = new Scoreboard();
+                var sb:Scoreboard = allocate(Scoreboard);
                 addChild(sb);
-                sb.StartReport(currentScore);
+                sb.startReport(currentScore);
             }
         }        
         

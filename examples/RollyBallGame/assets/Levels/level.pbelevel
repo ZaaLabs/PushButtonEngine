@@ -52,8 +52,8 @@
 		</component>
 		<component type="com.pblabs.animation.AnimatorComponent"
 			name="FadeAnimator">
+			<autoPlay>false</autoPlay>
 			<reference>@Sprite.alpha</reference>
-			<defaultAnimation></defaultAnimation>
 			<animations>
 				<FadeOut type="com.pblabs.animation.Animator">
 					<animationType>PLAY_ANIMATION_ONCE</animationType>
@@ -180,17 +180,10 @@
 		</component>
 	</entity>
 
-	<entity name="Player1" template="BasePlayer">
-		<component name="Spatial">
-			<OnFirstMoveAnimation componentReference="WelcomeScreen"
-				componentName="FadeAnimator" />
-		</component>
-	</entity>
-
 	<group name="Level1">
 	   <groupReference name="Everything"/>
 		<objectReference name="Level1Map" />
-		<objectReference name="Player1" />
+		<objectReference name="BasePlayer" />
 		<objectReference name="Coin" />
 	</group>
 

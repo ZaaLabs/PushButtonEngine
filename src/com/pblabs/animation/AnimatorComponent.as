@@ -16,7 +16,7 @@ package com.pblabs.animation
     /**
      * Component for animating any value on its owner.
      */
-    public class AnimatorComponent extends com.pblabs.engine.time.AnimatedComponent
+    public class AnimatorComponent extends AnimatedComponent
     {
         /**
          * A list of all the animation that can be played by this component.
@@ -43,16 +43,21 @@ package com.pblabs.animation
 
         private var _currentAnimation:Animator = null;
 
+        
+        public function AnimatorComponent()
+        {
+        }
+        
 		/**
          * @inheritDoc
          */
         override public function onFrame(elapsed:Number):void
         {
-            if (_currentAnimation)
-            {
-                _currentAnimation.animate(elapsed);                               
-                owner.setProperty(reference, _currentAnimation.currentValue);
-            }
+            if (!_currentAnimation)
+                return;
+
+            _currentAnimation.animate(elapsed);                               
+            owner.setProperty(reference, _currentAnimation.currentValue);
         }
 
         /**

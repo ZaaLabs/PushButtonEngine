@@ -45,6 +45,9 @@ package com.pblabs.engine.core
             _managers[clazz + "|" + name] = i;
             injector.mapValue(clazz, i, name);
             injector.injectInto(i);
+            
+            if(i is IPBManager)
+                (i as IPBManager).startup();
         }
         
         public function getManager(clazz:Class, name:String = null):*

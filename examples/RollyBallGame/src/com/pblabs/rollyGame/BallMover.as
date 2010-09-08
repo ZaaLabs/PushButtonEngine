@@ -46,7 +46,6 @@ package com.pblabs.rollyGame
         public var pickupType:ObjectType = new ObjectType();
         public var pickupRadius:Number = 4;
         
-        public var onFirstMoveAnimation:AnimatorComponent = null;
         public var pickupSound:String;
         
         // Temporary objects to avoid allocations.
@@ -119,36 +118,23 @@ package com.pblabs.rollyGame
             }
         }
         
-        private function _handleFirstMove():void
-        {
-            if(onFirstMoveAnimation)
-            {
-                onFirstMoveAnimation.play("FadeOut", 1);
-                onFirstMoveAnimation = null;
-            }
-        }
-        
         private function _onLeft(value:Number):void
         {
-            _handleFirstMove();
             _left = value;
         }
         
         private function _onRight(value:Number):void
         {
-            _handleFirstMove();
             _right = value;
         }
         
         private function _onUp(value:Number):void
         {
-            _handleFirstMove();
             _up = value;
         }
         
         private function _onDown(value:Number):void
         {
-            _handleFirstMove();
             _down = value;
         }
         

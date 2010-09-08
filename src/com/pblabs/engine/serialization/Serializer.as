@@ -50,7 +50,7 @@ package com.pblabs.engine.serialization
             {
                 // Don't error, as it makes it very hard for CS4 people to develop.
                 Logger.print(this, "Metadata is not included in this build of the engine, so serialization will not work!\n" + 
-                    "Add --keep-as3-metadata+=TypeHint,EditorData,Embed to your compiler arguments to get around this.");
+                    "Add --keep-as3-metadata+=TypeHint,EditorData,Embed,Inject to your compiler arguments to get around this.");
             }
         }
         
@@ -445,8 +445,8 @@ package com.pblabs.engine.serialization
                     typeName = typeHint ? typeHint : "String";
                 
                 // deserialize the value.
-                if (getChildReference(context, object, key, childXML) 
-                    || getResourceObject(context, object, key, childXML, typeHint))
+                if (!getChildReference(context, object, key, childXML) 
+                    || !getResourceObject(context, object, key, childXML, typeHint))
                 {
                     var value:* = getChildObject(object, key, typeName, childXML);
                     if (value != null)
@@ -647,11 +647,11 @@ package com.pblabs.engine.serialization
             for (var i:int = 0; i < _deferredReferences.length; i++)
             {
                 var reference:ReferenceNote = _deferredReferences[i];
-                if (reference.resolve())
-                {
-                    _deferredReferences.splice(i, 1);
-                    i--;
-                }
+                if (!reference.resolve())
+                    continue;
+
+                _deferredReferences.splice(i, 1);
+                i--;
             }
         }
         
