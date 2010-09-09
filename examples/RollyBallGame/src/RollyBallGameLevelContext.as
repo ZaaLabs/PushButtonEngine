@@ -27,7 +27,7 @@ package
         
         // State of this level.
         public var startTime:int = 0;
-        public var levelDuration:int = 3000;
+        public var levelDuration:int = 45000;
         public var currentTime:int = levelDuration;
         public var currentScore:int = 0;
         
@@ -75,6 +75,8 @@ package
         {
             processManager.removeTickedObject(this);
             processManager.removeAnimatedObject(this);
+            
+            fadedWelcomeScreen = false;
 
             super.shutdown();
         }
