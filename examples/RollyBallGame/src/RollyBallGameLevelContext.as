@@ -113,9 +113,12 @@ package
             if(inputManager.isAnyKeyDown() && !fadedWelcomeScreen)
             {
                 fadedWelcomeScreen = true;
-                Logger.print(this, "Playing thing.");
                 var a:AnimatorComponent = lookupComponent("WelcomeScreen", "FadeAnimator") as AnimatorComponent;
-                a.play("FadeOut");
+                if(a)
+                {
+                    Logger.print(this, "Playing thing.");
+                    a.play("FadeOut");                    
+                }
             }
             
             // Deal with timing logic.

@@ -198,6 +198,7 @@ package com.pblabs.engine.time
 			}
 			
 			started = false;
+            timer.stop();
             game.mainStage.removeEventListener(Event.ENTER_FRAME, onFrame);
 		}
 		
@@ -206,7 +207,7 @@ package com.pblabs.engine.time
 		 */ 
 		public function get isTicking():Boolean
 		{
-			return started;
+			return started && timeScale > 0;
 		}
 		
 		/**
@@ -429,9 +430,13 @@ package com.pblabs.engine.time
 		 */
 		private function onFrame(event:TimerEvent):void
 		{
-			// This is called from a system event, so it had better be at the 
-			// root of the profiler stack!
-			Profiler.ensureAtRoot();
+            // This is called from a system event, so it had better be at the 
+            // root of the profiler stack!
+            Profiler.ensureAtRoot();
+
+            // Safety for when we've stop()'ed.
+            if(!started)
+                return;
 			
 			// Track current time.
 			var currentTime:Number = getTimer();
@@ -543,6 +548,11 @@ package com.pblabs.engine.time
 			duringAdvance = false;
 			Profiler.exit("frame");
 			
+            // Pump the call later queue.
+            Profiler.enter("callLater_postFrame");
+            PBUtil.processCallLaters();
+            Profiler.exit("callLater_postFrame");
+            
 			// Purge the lists if needed.
 			if(needPurgeEmpty)
 			{

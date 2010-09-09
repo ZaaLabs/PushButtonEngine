@@ -129,10 +129,8 @@
 
 	<group name="Everything">
 		<objectReference name="CoinSheet" />
-		<objectReference name="WelcomeSheet" />
 		<objectReference name="SpatialDB" />
 		<objectReference name="Scene" />
-		<objectReference name="WelcomeScreen" />
 	</group>
 
 	<template name="BaseLevel">
@@ -181,10 +179,12 @@
 	</entity>
 
 	<group name="Level1">
-	   <groupReference name="Everything"/>
+        <groupReference name="Everything"/>
 		<objectReference name="Level1Map" />
 		<objectReference name="BasePlayer" />
 		<objectReference name="Coin" />
+        <objectReference name="WelcomeSheet" />
+        <objectReference name="WelcomeScreen" />
 	</group>
 
 	<entity name="Level2Map" alias="LevelMap" template="BaseLevel">
@@ -200,7 +200,7 @@
 	</entity>
 
 	<group name="Level2">
-       <groupReference name="Everything"/>
+        <groupReference name="Everything"/>
 		<objectReference name="Level2Map" />
 		<objectReference name="BasePlayer" />
         <objectReference name="Coin" />

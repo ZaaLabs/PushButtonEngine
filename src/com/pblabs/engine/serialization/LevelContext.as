@@ -1,6 +1,7 @@
 package com.pblabs.engine.serialization
 {
     import com.pblabs.engine.core.PBContext;
+    import com.pblabs.engine.debug.Logger;
     import com.pblabs.engine.time.IProcessManager;
     import com.pblabs.engine.time.ProcessManager;
     
@@ -51,6 +52,9 @@ package com.pblabs.engine.serialization
         
         protected function onLevelLoaded(e:*):void
         {
+            Logger.print(this, "Loaded " + _levelUrl + ", now instantiating " + _group);
+            templateManager.removeEventListener(TemplateManager.LOADED_EVENT, onLevelLoaded);
+            
             // Instantiate the default group.
             templateManager.instantiateGroup(this, _group);
 
@@ -61,6 +65,8 @@ package com.pblabs.engine.serialization
         
         public override function shutdown():void
         {
+            templateManager.unloadFile(_levelUrl);
+            
             // Nuke our root group.
             super.shutdown();
         }

@@ -358,7 +358,7 @@ package com.pblabs.engine.debug
         
         protected function processCommand():void
         {
-            addLogMessage("CMD", ">", _input.text);
+            Logger.print(this, ">" + _input.text);
             Console.processLine(_input.text);
             _consoleHistory.push(_input.text);
             _historyIndex = _consoleHistory.length;
@@ -452,7 +452,7 @@ package com.pblabs.engine.debug
         {
             removeListeners();
             if(stage)
-                stage.focus = null;
+                stage.focus = stage;
         }
         
         public function set restrict(value:String):void

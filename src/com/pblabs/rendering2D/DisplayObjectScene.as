@@ -137,6 +137,9 @@ package com.pblabs.rendering2D
             // Make sure we don't leave any lingering content.
             if(_sceneView)
                 _sceneView.removeDisplayObject(_rootSprite);
+            
+            // Make sure we can rebind to the sceneview later.
+            _sceneView = null;
         }
         
         public function get layerCount():int
