@@ -29,7 +29,6 @@ package com.pblabs.engine.core
             registerManager(Serializer, new Serializer);
             registerManager(InputManager, new InputManager());
             registerManager(NameManager, new NameManager());
-            registerManager(ObjectTypeManager, new ObjectTypeManager());
             registerManager(ResourceManager, new ResourceManager());
             registerManager(TemplateManager, new TemplateManager());
             
