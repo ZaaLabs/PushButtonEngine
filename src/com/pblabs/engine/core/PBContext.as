@@ -47,12 +47,9 @@ package com.pblabs.engine.core
         
         public var injector:Injector = new Injector();
         
-        /*[Inject]
-        public var game:PBGame; */
-        
         public function PBContext(_name:String = null):void
         {
-            if (!name)
+            if (_name == null)
                 initializeName();
             else
                 name = _name;
