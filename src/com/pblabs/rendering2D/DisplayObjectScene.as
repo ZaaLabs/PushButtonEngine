@@ -8,10 +8,8 @@
  ******************************************************************************/
 package com.pblabs.rendering2D
 {
-    import com.pblabs.engine.PBE;
     import com.pblabs.engine.PBUtil;
     import com.pblabs.engine.core.ObjectType;
-    import com.pblabs.engine.core.ObjectTypeManager;
     import com.pblabs.engine.debug.Logger;
     import com.pblabs.engine.time.AnimatedComponent;
     import com.pblabs.rendering2D.ui.IUITarget;
@@ -29,9 +27,6 @@ package com.pblabs.rendering2D
      */
     public class DisplayObjectScene extends AnimatedComponent implements IScene2D
     {
-        [Inject]
-        public var objectTypeManager:ObjectTypeManager;
-        
         /**
          * Minimum allowed zoom level.
          * 
@@ -392,7 +387,7 @@ package com.pblabs.rendering2D
                 if(!renderer.owner)
                     continue;
                 
-                if(mask && !objectTypeManager.doTypesOverlap(mask, renderer.objectMask))
+                if(mask && !mask.overlaps(renderer.objectMask))
                     continue;
                 
                 if(!renderer.pointOccupied(scenePosition, mask))

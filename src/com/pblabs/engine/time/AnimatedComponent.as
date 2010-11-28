@@ -25,7 +25,7 @@ package com.pblabs.engine.time
         public var updatePriority:Number = 0.0;
         
         [Inject]
-        public var processManager:IProcessManager;
+        public var processManager:ProcessManager;
         
         private var _registerForUpdates:Boolean = true;
         private var _isRegisteredForUpdates:Boolean = false;

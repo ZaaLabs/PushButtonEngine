@@ -16,13 +16,11 @@ package com.pblabs.box2D
     import Box2D.Dynamics.b2DebugDraw;
     import Box2D.Dynamics.b2World;
     
-	import com.pblabs.engine.PBE;
-    import com.pblabs.engine.core.ITickedObject;
+    import com.pblabs.engine.core.EntityComponent;
     import com.pblabs.engine.core.ObjectType;
-    import com.pblabs.engine.core.ObjectTypeManager;
-    import com.pblabs.engine.core.ProcessManager;
     import com.pblabs.engine.debug.Logger;
-    import com.pblabs.engine.entity.EntityComponent;
+    import com.pblabs.engine.time.ITickedObject;
+    import com.pblabs.engine.time.ProcessManager;
     import com.pblabs.rendering2D.BasicSpatialManager2D;
     import com.pblabs.rendering2D.IScene2D;
     import com.pblabs.rendering2D.ISpatialManager2D;
@@ -34,6 +32,12 @@ package com.pblabs.box2D
     
     public class Box2DManagerComponent extends EntityComponent implements ITickedObject, ISpatialManager2D
     {
+		[Inject]
+		public var scene:IScene2D;
+		
+		[Inject]
+		public var processManager:ProcessManager;
+		
         [EditorData(defaultValue="30")]
         public function get scale():Number
         {
@@ -104,7 +108,7 @@ package com.pblabs.box2D
         
         override protected function onAdd():void
         {
-            context.processManager.addTickedObject(this);
+            processManager.addTickedObject(this);
             createWorld();
         }
         
@@ -115,7 +119,7 @@ package com.pblabs.box2D
             //defer until we know it should not be locked anymore.
             if (_world.m_lock)
             {
-                context.processManager.schedule(0, this, onRemove);
+                processManager.schedule(0, this, onRemove);
             }
             else
             {
@@ -128,7 +132,7 @@ package com.pblabs.box2D
                 
                 _world = null;
                 
-                context.processManager.removeTickedObject(this);
+                processManager.removeTickedObject(this);
             }
         }
         
@@ -141,7 +145,7 @@ package com.pblabs.box2D
             //defer until we know it should not be locked anymore.
             if (_world.m_lock)
             {
-                context.processManager.schedule(0, thisArg, add, bodyDef, thisArg, completedCallback);
+                processManager.schedule(0, thisArg, add, bodyDef, thisArg, completedCallback);
             }
             else
             {
@@ -158,7 +162,7 @@ package com.pblabs.box2D
                 //the world is locked. this was called from a collision or other event.
                 //defer until we know it should not be locked anymore.
                 if (_world.m_lock)
-                    context.processManager.schedule(0, this, remove, body);
+                    processManager.schedule(0, this, remove, body);
                 else
                     _world.DestroyBody(body);
             }
@@ -210,7 +214,7 @@ package com.pblabs.box2D
 					
 					var curShape:b2Shape = resultShapes[i] as b2Shape;
 					var curComponent:Box2DSpatialComponent = curShape.GetBody().GetUserData() as Box2DSpatialComponent;
-					if(context.objectTypeManager.doTypesOverlap(curComponent.collisionType, mask) || mask == null)
+					if(mask == null && mask.overlaps(curComponent.collisionType))
 						results.push(curComponent);
 				}
 			}
@@ -272,7 +276,7 @@ package com.pblabs.box2D
             var hitAny:Boolean = false;
             for each(var tmp:ISpatialObject2D in tmpResults)
             {
-                if (!tmp.pointOccupied(worldPosition, mask, PBE.scene))
+                if (!tmp.pointOccupied(worldPosition, mask, scene))
                     continue;
                 
                 results.push(tmp);

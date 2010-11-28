@@ -11,6 +11,7 @@ package com.pblabs.basic
 
     import com.pblabs.engine.core.EntityComponent;
     import com.pblabs.engine.resource.MP3Resource;
+    import com.pblabs.engine.time.ProcessManager;
     
     import flash.events.Event;
     import flash.events.IEventDispatcher;
@@ -20,6 +21,9 @@ package com.pblabs.basic
      */
     public class EventSoundTrigger extends EntityComponent
     {
+		[Inject]
+		public var processManager:ProcessManager;
+		
         /**
          * Sounds indexed by event type to trigger them.
          */
@@ -49,7 +53,7 @@ package com.pblabs.basic
             
             if (!_didSchedule)
             {
-                context.processManager.schedule(100, this, onReset);
+                processManager.schedule(100, this, onReset);
                 _didSchedule=true;
             }
         }

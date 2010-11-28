@@ -15,12 +15,11 @@ package com.pblabs.box2D
     import Box2D.Dynamics.b2BodyDef;
     
     import com.pblabs.engine.PBUtil;
+    import com.pblabs.engine.core.EntityComponent;
     import com.pblabs.engine.core.ObjectType;
     import com.pblabs.engine.debug.Logger;
-    import com.pblabs.engine.entity.EntityComponent;
     import com.pblabs.rendering2D.IMobileSpatialObject2D;
     import com.pblabs.rendering2D.IScene2D;
-    import com.pblabs.rendering2D.ISpatialObject2D;
     import com.pblabs.rendering2D.RayHitInfo;
     
     import flash.geom.Point;

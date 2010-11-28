@@ -276,7 +276,7 @@ package com.pblabs.engine.core
 		{
 			var ns:ObjectTypeNamespace = getNamespace(namespace, createIfAbsent);
 			if(!ns)
-				return -1;
+				return 0xFFFFFFFF;
 			return ns.getType(flag);
 		}
         

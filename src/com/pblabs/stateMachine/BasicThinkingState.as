@@ -30,7 +30,10 @@ package com.pblabs.stateMachine
         
         public function getTimeForNextTick(fsm:IMachine):int
         {
-            return context.processManager.virtualTime + getDuration(fsm);
+			throw new Error("The method 'getTimeForNextTick' on BasicThinkingState is currently not implemented.");
+			
+            //return context.processManager.virtualTime + getDuration(fsm);
+			return -1;
         }
     }
 }

@@ -8,8 +8,7 @@
  ******************************************************************************/
 package com.pblabs.screens
 {
-
-    import com.pblabs.rendering.ui.PBLabel;
+    import com.pblabs.rendering2D.ui.PBLabel;
     
     import flash.geom.*;
 
@@ -38,7 +37,7 @@ package com.pblabs.screens
             // Draw a background that fills the screen.
             graphics.clear();
             graphics.beginFill(fillColor);
-            graphics.drawRoundRect(0, 0, context.mainStage.stageWidth, context.mainStage.stageHeight, 16, 16);
+            graphics.drawRoundRect(0, 0, stage.stageWidth, stage.stageHeight, 16, 16);
             graphics.endFill();
         }
         

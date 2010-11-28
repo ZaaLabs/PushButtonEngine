@@ -85,7 +85,7 @@ package com.pblabs.engine.serialization
        */
       public function generateSchema():void
       {
-         if (context.IS_SHIPPING_BUILD)
+         if (PBE.IS_SHIPPING_BUILD)
             return;
          
          _connection = new LocalConnection();

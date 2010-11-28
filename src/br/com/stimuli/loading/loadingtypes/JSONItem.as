@@ -1,15 +1,13 @@
 package br.com.stimuli.loading.loadingtypes {
 	
-	import br.com.stimuli.loading.loadingtypes.LoadingItem;
 	import br.com.stimuli.loading.BulkLoader;
 	
+	import com.adobe.serialization.json.JSON;
 	
 	import flash.display.*;
-    import flash.net.*;
-    import flash.events.*;
-    import flash.utils.*;
-	
-    import com.adobe.serialization.json.JSON;
+	import flash.events.*;
+	import flash.net.*;
+	import flash.utils.*;
     
 	/** @private */
 	public class JSONItem extends LoadingItem {

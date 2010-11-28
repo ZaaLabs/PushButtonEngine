@@ -9,15 +9,19 @@
 package com.pblabs.rendering2D
 {
     import com.pblabs.engine.PBE;
-	import com.pblabs.engine.resource.ImageResource;
-	
-	import flash.geom.Point;
+    import com.pblabs.engine.resource.ImageResource;
+    import com.pblabs.engine.resource.ResourceManager;
+    
+    import flash.geom.Point;
 	
    /**
     * Render Component that will load and render a ImageResource as a Sprite
     */ 
 	public class SpriteRenderer extends BitmapRenderer
 	{
+		[Inject]
+		public var resourceManager:ResourceManager;
+		
 		//----------------------------------------------------------
 		// public getter/setter functions 
 		//----------------------------------------------------------
@@ -38,7 +42,7 @@ package com.pblabs.rendering2D
 				_fileName = value;
 				_loading = true;
 				// Tell the ResourceManager to load the IMageResource
-				PBE.resourceManager.load(fileName,ImageResource,imageLoadCompleted,imageLoadFailed,false);				
+				resourceManager.load(fileName,ImageResource,imageLoadCompleted,imageLoadFailed,false);				
 			}	
 		}
 		

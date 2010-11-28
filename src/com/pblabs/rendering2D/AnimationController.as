@@ -8,12 +8,11 @@
  ******************************************************************************/
 package com.pblabs.rendering2D
 {
-    import com.pblabs.engine.PBE;
-    import com.pblabs.engine.components.AnimatedComponent;
-    import com.pblabs.engine.core.ProcessManager;
+    import com.pblabs.engine.core.PropertyReference;
     import com.pblabs.engine.debug.Logger;
     import com.pblabs.engine.debug.Profiler;
-    import com.pblabs.engine.core.PropertyReference;
+    import com.pblabs.engine.time.AnimatedComponent;
+    import com.pblabs.engine.time.ProcessManager;
     import com.pblabs.rendering2D.spritesheet.SpriteContainerComponent;
     
     import flash.events.Event;
@@ -24,18 +23,6 @@ package com.pblabs.rendering2D
      */
     public class AnimationController extends AnimatedComponent
     {
-        //--------------------------------------------------------------------------
-        //
-        //  Constructor
-        //
-        //--------------------------------------------------------------------------
-
-        //--------------------------------------------------------------------------
-        //
-        //  Variables
-        //
-        //--------------------------------------------------------------------------
-
         /**
          * Animations, indexed by name.
          *
@@ -233,7 +220,6 @@ package com.pblabs.rendering2D
             updateAnimationDuration();
             //trace("Age at start was " + (processManager.virtualTime - _currentAnimationStartTime));
 
-            //Logger.(this, "Changed animation to: " + _currentAnimation.spriteSheet.name + ". duration is " + _currentAnimationDuration);
 
             Profiler.exit("AnimationController.SetAnimation");
         }
@@ -242,7 +228,7 @@ package com.pblabs.rendering2D
         {
             // Update our duration information.
             if (currentAnimationDurationReference)
-                _currentAnimationDuration = owner.getProperty(currentAnimationDurationReference) * ProcessManager.TICK_RATE_MS;
+                _currentAnimationDuration = owner.getProperty(currentAnimationDurationReference) * processManager.TICK_RATE_MS;
             else
                 _currentAnimationDuration = _currentAnimation.spriteSheet.frameCount * (1000/_currentAnimation.frameRate);
         }
