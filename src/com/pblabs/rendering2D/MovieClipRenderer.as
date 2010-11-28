@@ -1,10 +1,11 @@
 package com.pblabs.rendering2D
 {
     import com.pblabs.engine.PBE;
-	import com.pblabs.engine.resource.SWFResource;
+    import com.pblabs.engine.resource.ResourceManager;
+    import com.pblabs.engine.resource.SWFResource;
     
     import flash.display.MovieClip;
-	import flash.geom.Point;
+    import flash.geom.Point;
 
     /**
      * Renderer which is for displaying MovieClips/SWFs and playing their
@@ -16,6 +17,9 @@ package com.pblabs.rendering2D
      */
 	public class MovieClipRenderer extends DisplayObjectRenderer
 	{
+		[Inject]
+		public var resourceManager:ResourceManager;
+		
         /**
          * Framerate for playback. 
          */
@@ -52,7 +56,7 @@ package com.pblabs.rendering2D
 				_fileName = value;
 				_loading = true;
 				// Tell the ResourceManager to load the SWFResource
-				PBE.resourceManager.load(fileName,SWFResource,swfLoadCompleted,swfLoadFailed,false);				
+				resourceManager.load(fileName,SWFResource,swfLoadCompleted,swfLoadFailed,false);				
 			}	
 		}
 		

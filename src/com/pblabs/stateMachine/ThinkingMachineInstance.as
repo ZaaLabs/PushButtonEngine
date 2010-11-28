@@ -62,7 +62,7 @@ package com.pblabs.stateMachine
             if(_currentState is BasicThinkingState)
             {
                 var targetDuration:int = (_currentState as BasicThinkingState).getDuration(this);
-                think(tick, targetDuration - (context.processManager.virtualTime - _enteredStateTime));
+                think(tick, targetDuration - (processManager.virtualTime - _enteredStateTime));
             }
         }
         
@@ -74,7 +74,7 @@ package com.pblabs.stateMachine
             if(!(_currentState is BasicThinkingState))
                 return 0;
 
-            return (_currentState as BasicThinkingState).getDuration(this) - (context.processManager.virtualTime - enteredStateTime);
+            return (_currentState as BasicThinkingState).getDuration(this) - (processManager.virtualTime - enteredStateTime);
         }
         
         public function get propertyBag():IPropertyBag
@@ -163,7 +163,7 @@ package com.pblabs.stateMachine
             newState.enter(this);
             
             // Note the time at which we entered this state.
-            _enteredStateTime = context.processManager.virtualTime;
+            _enteredStateTime = processManager.virtualTime;
 
             // Schedule next update.
             //Logger.print(this, "Scheduling for now +" + (newState as BasicThinkingState).getDuration(this));

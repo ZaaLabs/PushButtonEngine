@@ -9,9 +9,9 @@
 package com.pblabs.stateMachine
 {
 
-    import com.pblabs.engine.time.ProcessManager;
     import com.pblabs.engine.core.IPropertyBag;
     import com.pblabs.engine.debug.Logger;
+    import com.pblabs.engine.time.ProcessManager;
     
     import flash.utils.Dictionary;
 
@@ -22,6 +22,9 @@ package com.pblabs.stateMachine
      */
     public class Machine implements IMachine
     {
+		[Inject]
+		public var processManager:ProcessManager;
+		
         /** 
          * Set of states, indexed by name.
          */
@@ -147,7 +150,7 @@ package com.pblabs.stateMachine
             newState.enter(this);
             
             // Note the time at which we entered this state.             
-            _enteredStateTime = context.processManager.virtualTime;
+            _enteredStateTime = processManager.virtualTime;
 
             // Fire a transition event, if we have a dispatcher.
             if(_propertyBag)

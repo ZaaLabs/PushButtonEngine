@@ -302,9 +302,9 @@ internal class ObjNode
     public var data:*;
 }
 
-import com.pblabs.engine.core.IObjectPoolFactory;
+import com.pblabs.engine.util.IObjectPoolFactory;
 
-internal class SimpleFactory implements IObjectPoolFactory
+internal class SimpleFactory implements com.pblabs.engine.util.IObjectPoolFactory
 {
     private var _class:Class;
     

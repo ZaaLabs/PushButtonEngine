@@ -8,10 +8,8 @@
  ******************************************************************************/
 package com.pblabs.rendering2D
 {
-    import com.pblabs.engine.PBE;
     import com.pblabs.engine.core.EntityComponent;
     import com.pblabs.engine.core.ObjectType;
-    import com.pblabs.engine.core.ObjectTypeManager;
     import com.pblabs.engine.debug.Logger;
     import com.pblabs.engine.debug.Profiler;
     
@@ -30,9 +28,6 @@ package com.pblabs.rendering2D
          * the entity list changes via addSpatialObject or removeSpatialObject.
          */
         public static const EntitiesDirtyEvent:String = "BasicSpatialManager2D.EntitiesDirty";
-        
-        [Inject]
-        public var objectTypeManager:ObjectTypeManager;
         
         /**
          * @inheritDoc
@@ -83,7 +78,7 @@ package com.pblabs.rendering2D
             {
                 if (mask != null)
                 {
-                    if (!objectTypeManager.doTypesOverlap(object.objectMask, mask))
+                    if (!mask.overlaps(object.objectMask))
                         continue;
                 }
                 
@@ -114,7 +109,7 @@ package com.pblabs.rendering2D
             {
                 if (mask != null)
                 {
-                    if (!objectTypeManager.doTypesOverlap(object.objectMask, mask))
+                    if (!mask.overlaps(object.objectMask))
                         continue;
                 }
                 

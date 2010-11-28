@@ -19,6 +19,9 @@ package com.pblabs.basic
      */
     public class HealthComponent extends EntityComponent
     {
+		[Inject]
+		public var processManager:ProcessManager;
+		
         public var lastDamageTimeFade:Number = 200;
         public var maxHealth:Number = 100;
         public var destroyOnDeath:Boolean = true;
@@ -41,7 +44,7 @@ package com.pblabs.basic
          */
         public function get timeSinceLastDamage():Number
         {
-            return context.processManager.virtualTime - _timeOfLastDamage;
+            return processManager.virtualTime - _timeOfLastDamage;
         }
         
         /**
@@ -137,7 +140,7 @@ package com.pblabs.basic
             
             // For the flash magnitude, average in preceding fade. 
             damageMagnitude = Math.min(1.0 , (amount / _health) * 4);
-            _timeOfLastDamage = context.processManager.virtualTime;
+            _timeOfLastDamage = processManager.virtualTime;
             
             // Apply the damage.
             health -= amount;

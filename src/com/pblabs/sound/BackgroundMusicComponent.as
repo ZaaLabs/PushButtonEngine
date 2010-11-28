@@ -9,14 +9,17 @@
 package com.pblabs.sound
 {
 
-    import com.pblabs.engine.time.TickedComponent;
     import com.pblabs.engine.resource.SoundResource;
+    import com.pblabs.engine.time.TickedComponent;
     
     /**
      * Simple component to manage background music.
      */
     public class BackgroundMusicComponent extends TickedComponent
     {
+		[Inject]
+		public var soundManager:SoundManager;
+		
         protected var handle:SoundHandle;
         
         public var music:SoundResource;
@@ -37,9 +40,9 @@ package com.pblabs.sound
             if(!handle)
             {
                 if (music)
-                    handle = context.soundManager.play(music, SoundManager.MUSIC_MIXER_CATEGORY, 0, int.MAX_VALUE);
+                    handle = soundManager.play(music, SoundManager.MUSIC_MIXER_CATEGORY, 0, int.MAX_VALUE);
                 else if (musicUrl)
-                    handle = context.soundManager.stream(musicUrl, SoundManager.MUSIC_MIXER_CATEGORY, 0, int.MAX_VALUE);
+                    handle = soundManager.stream(musicUrl, SoundManager.MUSIC_MIXER_CATEGORY, 0, int.MAX_VALUE);
             }
             else if(!handle.isPlaying)
             {

@@ -24,6 +24,9 @@ package com.pblabs.engine.time
      */
     public class ThinkingComponent extends EntityComponent implements IQueuedObject
     {
+		[Inject]
+		public var processManager:ProcessManager;
+		
         protected var _nextThinkTime:int;
         protected var _nextThinkCallback:Function;
         
@@ -34,10 +37,10 @@ package com.pblabs.engine.time
          */
         public function think(nextCallback:Function, timeTillThink:int):void
         {
-            _nextThinkTime = context.processManager.virtualTime + timeTillThink;
+            _nextThinkTime = processManager.virtualTime + timeTillThink;
             _nextThinkCallback = nextCallback;
 
-            context.processManager.queueObject(this);
+            processManager.queueObject(this);
         }
         
         override protected function onRemove() : void
