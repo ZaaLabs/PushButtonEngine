@@ -105,12 +105,7 @@ package com.pblabs.debug
             
             _currentGroup = PBE._rootGroup;
             
-            // Set up FPS display.
-            _fps = new Stats();
-            _fps.timeManager = timeManager;
-            
             // Set up some handy helper commands.
-            commandManager.initialize();
             commandManager.registerCommand("toggleConsole", toggleConsole, "Hide or show the console.");
             commandManager.registerCommand("cd", changeDirectory, ".. to go up to parent, otherwise index or name to change to subgroup.");
             commandManager.registerCommand("ls", listDirectory, "Show the PBGroups in the current PBGroup.");
@@ -128,10 +123,21 @@ package com.pblabs.debug
         protected var _fps:Stats;
         protected function showFps():void
         {
+            if(!_fps)
+            {
+                _fps = new Stats();
+                _fps.timeManager = timeManager;
+            }
+            
             if(_fps.parent)
+            {
                 _fps.parent.removeChild(_fps);
+                _fps = null;
+            }
             else
+            {
                 stage.addChild(_fps);
+            }
         }
         
         protected function profilerOn():void
