@@ -1,10 +1,12 @@
 package com.pblabs.core
 {
+    import com.pblabs.PBUtil;
     import com.pblabs.debug.Console;
     import com.pblabs.debug.ConsoleCommandManager;
     import com.pblabs.input.KeyboardManager;
     import com.pblabs.property.PropertyManager;
     import com.pblabs.time.TimeManager;
+    import com.pblabs.util.TypeUtility;
     
     import flash.display.Sprite;
     import flash.display.Stage;
@@ -30,7 +32,7 @@ package com.pblabs.core
             // managers. Managers are available via dependency injection to the
             // demo scenes and objects.
             rootGroup.initialize();
-            rootGroup.name = "RootGroup";
+            rootGroup.name = TypeUtility.getObjectClassName(this) + "_Group";
             rootGroup.registerManager(Stage, stage);
             rootGroup.registerManager(PropertyManager, new PropertyManager());
             rootGroup.registerManager(ConsoleCommandManager, new ConsoleCommandManager());
