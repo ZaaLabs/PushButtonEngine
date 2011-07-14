@@ -23,7 +23,6 @@
 
 package com.pblabs.debug
 {
-    import com.pblabs.core.PBGroup;
     import com.pblabs.time.TimeManager;
     
     import flash.display.Bitmap;
@@ -68,6 +67,7 @@ package com.pblabs.debug
         private function onAddedToStage(e:Event):void
         {
             removeEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
+            addEventListener(Event.REMOVED_FROM_STAGE, onRemovedFromStage);
             
             graphics.beginFill(0x33);
             graphics.drawRect(0, 0, 65, 40);
@@ -143,6 +143,17 @@ package com.pblabs.debug
             fpsTimes.length = 15;
             
             stage.invalidate();
+        }
+        
+        private function onRemovedFromStage(event:Event):void
+        {
+            addEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
+            
+            removeEventListener(Event.REMOVED_FROM_STAGE, onRemovedFromStage);
+            removeEventListener(MouseEvent.CLICK, onClick);
+            removeEventListener(MouseEvent.MOUSE_OVER, onMouseOver);
+            removeEventListener(MouseEvent.MOUSE_OUT, onMouseOut);
+            timeManager.timer.removeEventListener(TimerEvent.TIMER, update);	
         }
         
         private function onClick(event:MouseEvent):void
