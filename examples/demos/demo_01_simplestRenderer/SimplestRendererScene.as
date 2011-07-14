@@ -1,3 +1,10 @@
+/**
+ * ## Simplest Renderer Demo
+ *
+ * This is very nearly the simplest possible demo - a single game object 
+ * that draws a circle on the stage via a very simple rendering component.
+ * There is no animation or fancy game logic. See the next demo for that.
+ */
 package demos.demo_01_simplestRenderer
 {
     import com.pblabs.core.PBGroup;
@@ -7,17 +14,32 @@ package demos.demo_01_simplestRenderer
     import demos.SimplestDemoGameObject;
     
     /**
-     * Very simplest possible demo - a single game object that draws a circle
-     * on the stage via a rendering component.
+     * Declare our demo class.
+     *
+     * All demos subclass from PBGroup. Why do we do this? The short answer is
+     * that it makes it easy to load/unload them and everything they create.
+     * PBGroups own all the objects that are added to them, and then they are
+     * destroy()ed, they destroy() everything they contain.
+     *
+     * This demo uses two other classes: <a href="SimplestDemoGameObject.html">
+     * SimplestDemoGameObject</a> and <a href="SimplestSpriteRenderer.html">
+     * SimplestSpriteRenderer</a>. Give this demo a skim then check them out.
      */
     public class SimplestRendererScene extends PBGroup
     {
         /**
-         * Called when the demo scene is created.
+         * ## Initialize()
+         * 
+         * initialize() is called when the demo scene is instantiated.
+         *
+         * Since PBGameObjects are destroyed automatically when they are in a
+         * PBGroup, and components will automatically initialize themselves,
+         * all we have to do is set things in motion and let them take care of
+         * themselves.
          */
         public override function initialize():void
         {
-            // Always remember to call the superclass' implementation. It needs
+            // First, always remember to call the PBGroup superclass' implementation. It needs
             // to do its own setup logic.
             super.initialize();
             
@@ -53,3 +75,6 @@ package demos.demo_01_simplestRenderer
         }
     }
 }
+
+// @docco-chapter 1. First Steps
+// @docco-order 2
