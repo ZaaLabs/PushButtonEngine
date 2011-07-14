@@ -16,35 +16,25 @@ package com.pblabs.debug
     import com.pblabs.core.PBGroup;
     import com.pblabs.core.PBObject;
     import com.pblabs.core.PBSet;
-    import com.pblabs.debug.ConsoleCommandManager;
-    import com.pblabs.debug.ILogAppender;
-    import com.pblabs.debug.LogColor;
-    import com.pblabs.debug.Logger;
-    import com.pblabs.debug.Profiler;
     import com.pblabs.input.KeyboardKey;
     import com.pblabs.input.KeyboardManager;
     import com.pblabs.pb_internal;
-    import com.pblabs.time.IAnimated;
     import com.pblabs.time.ITicked;
     import com.pblabs.time.TimeManager;
     import com.pblabs.util.TypeUtility;
     
     import flash.display.Bitmap;
     import flash.display.BitmapData;
-    import flash.display.DisplayObject;
-    import flash.display.DisplayObjectContainer;
     import flash.display.Sprite;
     import flash.display.Stage;
     import flash.events.Event;
     import flash.events.KeyboardEvent;
     import flash.events.MouseEvent;
-    import flash.system.Security;
     import flash.system.System;
     import flash.text.TextField;
     import flash.text.TextFieldType;
     import flash.text.TextFormat;
     import flash.ui.Keyboard;
-    import flash.utils.getDefinitionByName;
     
     use namespace pb_internal;
     
@@ -77,7 +67,6 @@ package com.pblabs.debug
         protected var tabCompletionCurrentOffset:int = 0;
         
         protected var _currentGroup:PBGroup = PBE._rootGroup;
-        protected var _currentCommandManager:ConsoleCommandManager = null;
         
         protected var keyBindings:Vector.<KeyBindingEntry> = new Vector.<KeyBindingEntry>();
         
@@ -85,7 +74,10 @@ package com.pblabs.debug
         public var showStackTrace:Boolean = true;
         
         [Inject]
-        public var keyboardManager:KeyboardManager= null;
+        public var commandManager:ConsoleCommandManager = null;
+        
+        [Inject]
+        public var keyboardManager:KeyboardManager = null;
         
         [Inject]
         public var timeManager:TimeManager = null;
@@ -113,23 +105,19 @@ package com.pblabs.debug
             
             _currentGroup = PBE._rootGroup;
             
-            // Set up the default console command manager.
-            _currentCommandManager = new ConsoleCommandManager();
-            _currentGroup.registerManager(ConsoleCommandManager, _currentCommandManager);
-            
             // Set up FPS display.
             _fps = new Stats();
             _fps.timeManager = timeManager;
             
             // Set up some handy helper commands.
-            _currentCommandManager.init();
-            _currentCommandManager.registerCommand("toggleConsole", toggleConsole, "Hide or show the console.");
-            _currentCommandManager.registerCommand("cd", changeDirectory, ".. to go up to parent, otherwise index or name to change to subgroup.");
-            _currentCommandManager.registerCommand("ls", listDirectory, "Show the PBGroups in the current PBGroup.");
-            _currentCommandManager.registerCommand("tree", tree, "Dump all objects in current group or below.");
-            _currentCommandManager.registerCommand("fps", showFps, "Toggle FPS/Memory display.");
-            _currentCommandManager.registerCommand("profilerOn", profilerOn, "Turn profiler on.");
-            _currentCommandManager.registerCommand("profilerOff", profilerOff, "Turn profiler off and dump results.");
+            commandManager.initialize();
+            commandManager.registerCommand("toggleConsole", toggleConsole, "Hide or show the console.");
+            commandManager.registerCommand("cd", changeDirectory, ".. to go up to parent, otherwise index or name to change to subgroup.");
+            commandManager.registerCommand("ls", listDirectory, "Show the PBGroups in the current PBGroup.");
+            commandManager.registerCommand("tree", tree, "Dump all objects in current group or below.");
+            commandManager.registerCommand("fps", showFps, "Toggle FPS/Memory display.");
+            commandManager.registerCommand("profilerOn", profilerOn, "Turn profiler on.");
+            commandManager.registerCommand("profilerOff", profilerOff, "Turn profiler off and dump results.");
         }
         
         public function destroy():void
@@ -355,7 +343,7 @@ package com.pblabs.debug
          */
         public function processLine(line:String):void
         {
-            if(!_currentCommandManager)
+            if(!commandManager)
             {
                 Logger.warn(this, "processLine", "No active ConsoleCommandManager, cannot process command '" + line + "'");
                 return;
@@ -381,7 +369,7 @@ package com.pblabs.debug
             // Look up the command.
             if(args.length == 0)
                 return;
-            var potentialCommand:ConsoleCommand = _currentCommandManager.commands[args[0].toString().toLowerCase()]; 
+            var potentialCommand:ConsoleCommand = commandManager.commands[args[0].toString().toLowerCase()]; 
             
             if(!potentialCommand)
             {
@@ -609,7 +597,7 @@ package com.pblabs.debug
             else if (event.keyCode == Keyboard.TAB)
             {
                 // We are doing tab searching.
-                var list:Vector.<ConsoleCommand> = _currentCommandManager.getCommandList();
+                var list:Vector.<ConsoleCommand> = commandManager.getCommandList();
                 
                 // Is this the first step?
                 var isFirst:Boolean = false;

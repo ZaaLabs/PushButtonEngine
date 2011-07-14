@@ -1,14 +1,16 @@
 package com.pblabs.debug
 {
+    import com.pblabs.core.IPBManager;
     import com.pblabs.pb_internal;
     
     import flash.utils.Dictionary;
     
     use namespace pb_internal;
     
-    public class ConsoleCommandManager
+    public class ConsoleCommandManager implements IPBManager
     {
         pb_internal var commands:Dictionary = new Dictionary();
+        
         protected var commandList:Vector.<ConsoleCommand> = new Vector.<ConsoleCommand>();
         protected var commandListOrdered:Boolean = false;
         
@@ -67,7 +69,7 @@ package com.pblabs.debug
             
             // Register default commands.
             if(commands.help == null)
-                init();
+                initialize();
             
             // Note we are done.
             commandListOrdered = true;
@@ -82,7 +84,7 @@ package com.pblabs.debug
             });
         }
         
-        public function init():void
+        public function initialize():void
         {
             registerCommand("help", function(prefix:String = null):void
             {
@@ -112,6 +114,11 @@ package com.pblabs.debug
                 
                 // List input options.
             }, "[prefix] - List known commands, optionally filtering by prefix.");
+        }
+        
+        public function destroy():void
+        {
+            // Nothing needs to be destroyed
         }
     }
 }
