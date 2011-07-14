@@ -11,6 +11,7 @@ package com.pblabs.core
     import flash.display.Stage;
     import flash.display.StageAlign;
     import flash.display.StageScaleMode;
+    import flash.events.Event;
     
     [SWF(frameRate="32",wmode="direct")]
     public class PBMobileGame extends Sprite
@@ -26,6 +27,21 @@ package com.pblabs.core
             // Set it so that the stage resizes properly.
             stage.align = StageAlign.TOP_LEFT;
             stage.scaleMode = StageScaleMode.NO_SCALE;
+            
+            addEventListener(Event.ENTER_FRAME, onStartupFrame);
+        }
+        
+        // We have to wait until an ENTER_FRAME event occurs because on mobile
+        // devices and more specifically mobile emulators the stage width and height
+        // is completely inaccurate.
+        private function onStartupFrame(event:Event):void
+        {
+            onReady();
+        }
+        
+        protected function onReady():void
+        {
+            removeEventListener(Event.ENTER_FRAME, onStartupFrame);
             
             // Set up the root group for the demo and register a few useful
             // managers. Managers are available via dependency injection to the
