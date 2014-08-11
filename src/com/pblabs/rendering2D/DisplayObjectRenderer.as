@@ -69,6 +69,7 @@ package com.pblabs.rendering2D
          * If set, rotation is gotten from this property every frame.
          */
         public var rotationProperty:PropertyReference;
+		 public var rotationYProperty:PropertyReference;
         
         /**
          * If set, alpha is gotten from this property every frame.
@@ -115,6 +116,9 @@ package com.pblabs.rendering2D
         protected var _registrationPoint:Point = new Point();
         protected var _scale:Point = new Point(1, 1);
         protected var _rotation:Number = 0;
+		
+		public var rotationY:Number = 0;
+		
         protected var _alpha:Number = 1;
 		protected var _blendMode:String = BlendMode.NORMAL;
         protected var _position:Point = new Point();
@@ -707,6 +711,11 @@ package com.pblabs.rendering2D
                 var rot:Number = owner.getProperty(rotationProperty) as Number;
                 this.rotation = rot;
             }
+			 if (rotationYProperty)
+            {
+                var rotY:Number = owner.getProperty(rotationYProperty) as Number;
+                this.rotationY = rot;
+            }
             
             // Alpha.
             if (alphaProperty)
@@ -784,7 +793,9 @@ package com.pblabs.rendering2D
             displayObject.alpha = _alpha;
 			displayObject.blendMode = _blendMode;
             displayObject.visible = (alpha > 0);
-            
+			
+           displayObject.rotationY =rotationY;
+			
             _transformDirty = false;
         }
     }
